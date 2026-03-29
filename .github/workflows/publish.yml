@@ -1,7 +1,6 @@
 name: Build and Publish pygeometry
 
 on:
-  # Runs every time you push a new version tag like v0.1.0
   push:
     tags:
       - "v*"
@@ -11,26 +10,26 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      # --------------------------------------------------------
-      # Step 1: Checkout your code from GitHub
-      # --------------------------------------------------------
       - uses: actions/checkout@v4
 
       # --------------------------------------------------------
-      # Step 2: Install CGAL on each OS
-      # Each OS has its own package manager
+      # Install CGAL on each OS
       # --------------------------------------------------------
       - name: Install CGAL on Linux
         if: runner.os == 'Linux'
-        run: sudo apt-get install -y libcgal-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcgal-dev libboost-dev
 
       - name: Install CGAL on Mac
         if: runner.os == 'macOS'
-        run: brew install cgal
+        run: |
+          brew install cgal boost
 
       - name: Install CGAL on Windows
         if: runner.os == 'Windows'
@@ -38,42 +37,43 @@ jobs:
           git clone https://github.com/microsoft/vcpkg C:/vcpkg
           C:/vcpkg/bootstrap-vcpkg.bat
           C:/vcpkg/vcpkg install cgal:x64-windows
-          echo "CMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $env:GITHUB_ENV
-          echo "CGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal" >> $env:GITHUB_ENV
+        shell: cmd
 
       # --------------------------------------------------------
-      # Step 3: Build wheels for all Python versions
-      # cibuildwheel handles Python 3.10, 3.11, 3.12, 3.13, 3.14
-      # automatically on all three OS
+      # Build wheels using cibuildwheel
       # --------------------------------------------------------
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
         env:
-          CIBW_BUILD: cp310-* cp311-* cp312-* cp313-* cp314-*
-          CIBW_SKIP: "*-win32 *-manylinux_i686"
+          CIBW_BUILD: cp310-* cp311-* cp312-* cp313-*
+          CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux*"
           CIBW_ARCHS: auto64
-          # Pass CGAL location to CMake on Windows
-          CIBW_CMAKE_ARGS: >
-            -DCMAKE_TOOLCHAIN_FILE=${{ env.CMAKE_TOOLCHAIN_FILE }}
-            -DCGAL_DIR=${{ env.CGAL_DIR }}
+
+          # Linux cmake args
+          CIBW_CONFIG_SETTINGS_LINUX: "cmake.args=-DCGAL_DIR=/usr/lib/x86_64-linux-gnu/cmake/CGAL"
+
+          # Mac cmake args
+          CIBW_CONFIG_SETTINGS_MACOS: "cmake.args=-DCGAL_DIR=/opt/homebrew/lib/cmake/CGAL"
+
+          # Windows cmake args
+          CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.args=-DCGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal;-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+
+          # Install build dependencies inside cibuildwheel
+          CIBW_BEFORE_BUILD: pip install scikit-build-core pybind11
 
       # --------------------------------------------------------
-      # Step 4: Upload the built wheels as artifacts
+      # Upload built wheels
       # --------------------------------------------------------
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
-  # ============================================================
-  # PUBLISH TO PYPI
-  # Runs after all wheels are built successfully
-  # Uses the PYPI_API_TOKEN secret you added to GitHub
-  # ============================================================
   publish:
     name: Publish to PyPI
     needs: build_wheels
     runs-on: ubuntu-latest
+    if: always()
 
     steps:
       - uses: actions/download-artifact@v4
