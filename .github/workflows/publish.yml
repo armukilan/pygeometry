@@ -15,20 +15,12 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      # --------------------------------------------------------
-      # Step 1: Checkout your code from GitHub
-      # --------------------------------------------------------
       - uses: actions/checkout@v4
 
       # --------------------------------------------------------
-      # Step 2: Install CGAL on each OS
+      # Install CGAL on Mac and Windows directly
+      # Linux is handled inside the container via CIBW_BEFORE_ALL
       # --------------------------------------------------------
-      - name: Install CGAL on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcgal-dev libboost-dev
-
       - name: Install CGAL on Mac
         if: runner.os == 'macOS'
         run: |
@@ -43,7 +35,7 @@ jobs:
         shell: cmd
 
       # --------------------------------------------------------
-      # Step 3: Build wheels using cibuildwheel
+      # Build wheels using cibuildwheel
       # --------------------------------------------------------
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
@@ -51,10 +43,17 @@ jobs:
           CIBW_BUILD: cp310-* cp311-* cp312-* cp313-*
           CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux*"
           CIBW_ARCHS: auto64
+
+          # Install CGAL inside the Linux container
+          CIBW_BEFORE_ALL_LINUX: |
+            yum install -y epel-release && yum install -y CGAL-devel boost-devel || \
+            apt-get update && apt-get install -y libcgal-dev libboost-dev
+
+          # Install build dependencies for all platforms
           CIBW_BEFORE_BUILD: pip install scikit-build-core pybind11
 
       # --------------------------------------------------------
-      # Step 4: Upload built wheels as artifacts
+      # Upload built wheels
       # --------------------------------------------------------
       - uses: actions/upload-artifact@v4
         with:
@@ -62,7 +61,7 @@ jobs:
           path: ./wheelhouse/*.whl
 
   # ============================================================
-  # Publish to PyPI after all wheels are built
+  # Publish to PyPI
   # ============================================================
   publish:
     name: Publish to PyPI
