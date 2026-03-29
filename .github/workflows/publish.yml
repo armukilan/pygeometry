@@ -15,10 +15,13 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
+      # --------------------------------------------------------
+      # Step 1: Checkout your code from GitHub
+      # --------------------------------------------------------
       - uses: actions/checkout@v4
 
       # --------------------------------------------------------
-      # Install CGAL on each OS
+      # Step 2: Install CGAL on each OS
       # --------------------------------------------------------
       - name: Install CGAL on Linux
         if: runner.os == 'Linux'
@@ -40,7 +43,7 @@ jobs:
         shell: cmd
 
       # --------------------------------------------------------
-      # Build wheels using cibuildwheel
+      # Step 3: Build wheels using cibuildwheel
       # --------------------------------------------------------
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
@@ -48,27 +51,19 @@ jobs:
           CIBW_BUILD: cp310-* cp311-* cp312-* cp313-*
           CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux*"
           CIBW_ARCHS: auto64
-
-          # Linux cmake args
-          CIBW_CONFIG_SETTINGS_LINUX: "cmake.args=-DCGAL_DIR=/usr/lib/x86_64-linux-gnu/cmake/CGAL"
-
-          # Mac cmake args
-          CIBW_CONFIG_SETTINGS_MACOS: "cmake.args=-DCGAL_DIR=/opt/homebrew/lib/cmake/CGAL"
-
-          # Windows cmake args
-          CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.args=-DCGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal;-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-
-          # Install build dependencies inside cibuildwheel
           CIBW_BEFORE_BUILD: pip install scikit-build-core pybind11
 
       # --------------------------------------------------------
-      # Upload built wheels
+      # Step 4: Upload built wheels as artifacts
       # --------------------------------------------------------
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
+  # ============================================================
+  # Publish to PyPI after all wheels are built
+  # ============================================================
   publish:
     name: Publish to PyPI
     needs: build_wheels
