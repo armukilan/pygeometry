@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(pygeometry)
+project(pycglib)
 
 # ============================================================
 # WHAT IS THIS FILE?
@@ -75,20 +75,30 @@ endif()
 #     cgal/convex_hull.cpp   ← add new files here
 # )
 # ============================================================
-pybind11_add_module(pygeometry_core
-    src/pygeometry/wrapper.cpp
-    cgal/distance.cpp
-)
+#pybind11_add_module(pygeometry_core
+#    src/pygeometry/wrapper.cpp
+#    cgal/distance.cpp
+#)
+
+pybind11_add_module(pycglib_core 
+    src/pycglib/wrapper.cpp
+    cgal/distance.cpp)
 
 # Link CGAL
-target_link_libraries(pygeometry_core PRIVATE CGAL::CGAL)
+#target_link_libraries(pygeometry_core PRIVATE CGAL::CGAL)
+target_link_libraries(pycglib_core PRIVATE CGAL::CGAL)
 
 # ============================================================
 # INSTALL
 # Places the compiled .pyd/.so file inside the
 # pygeometry package folder so Python can find it
 # ============================================================
-install(TARGETS pygeometry_core
-    DESTINATION pygeometry
+#install(TARGETS pygeometry_core
+#    DESTINATION pygeometry
+#    COMPONENT python_modules
+#)
+
+install(TARGETS pycglib_core
+    DESTINATION pycglib
     COMPONENT python_modules
 )

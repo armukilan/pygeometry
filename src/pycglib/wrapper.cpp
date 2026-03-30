@@ -30,8 +30,8 @@ double squared_distance(double x1, double y1, double x2, double y2);
 // __init__.py imports everything from this module
 // so users just do: import pygeometry as pg
 // ============================================================
-PYBIND11_MODULE(pygeometry_core, m) {
-    m.doc() = "pygeometry - CGAL Python bindings";
+PYBIND11_MODULE(pycglib_core, m) {
+    m.doc() = "pycglib - CGAL Python bindings";
 
     // --------------------------------------------------------
     // Expose squared_distance to Python
