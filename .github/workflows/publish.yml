@@ -33,20 +33,35 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
         env:
+          # --------------------------------------------------------
+          # SUPPORTED PLATFORMS
+          # cp310 to cp313 = Python 3.10, 3.11, 3.12, 3.13
+          # win_amd64      = Windows 64-bit
+          # manylinux_2_28 = Linux with glibc 2.28+ (Ubuntu 20.04+, RHEL 8+)
+          # macosx_arm64   = Mac Apple Silicon (M1, M2, M3)
+          # macosx_x86_64  = Mac Intel
+          # --------------------------------------------------------
           CIBW_BUILD: cp310-* cp311-* cp312-* cp313-*
+
+          # --------------------------------------------------------
+          # EXCLUDED PLATFORMS (not compatible)
+          # win32          = Windows 32-bit (too old)
+          # manylinux_i686 = Linux 32-bit (too old)
+          # musllinux      = Alpine Linux (missing CGAL packages)
+          # manylinux_2_17 = CentOS 7 based (Boost too old, < 1.72)
+          # --------------------------------------------------------
           CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux*"
           CIBW_ARCHS: auto64
 
-          # Install CGAL from source inside manylinux container
+          # Use modern manylinux image (glibc 2.28+)
+          # Supports: Ubuntu 20.04+, Debian 10+, RHEL 8+, CentOS 8+
+          # Excludes: Ubuntu 18.04 and older, RHEL/CentOS 7 and older
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+
+          # Install CGAL inside the Linux container
           CIBW_BEFORE_ALL_LINUX: |
-            yum install -y boost-devel gmp-devel mpfr-devel cmake3 || true
-            cd /tmp
-            curl -L https://github.com/CGAL/cgal/releases/download/v6.0.1/CGAL-6.0.1.tar.xz -o CGAL.tar.xz
-            tar -xf CGAL.tar.xz
-            cd CGAL-6.0.1
-            mkdir build && cd build
-            cmake3 .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
-            make install
+            dnf install -y epel-release
+            dnf install -y CGAL-devel boost-devel gmp-devel mpfr-devel
 
           CIBW_BEFORE_BUILD: pip install scikit-build-core pybind11
 
