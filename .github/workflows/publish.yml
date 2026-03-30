@@ -39,7 +39,12 @@ jobs:
             dir C:/vcpkg/installed/x64-windows/share/cgal/
 
           # Pass all cmake args as a single space-separated string under cmake.args
-          CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.args=-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal"
+          # CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.args=-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal"
+          # Pass cmake args as separate cmake.args entries
+          # Each cmake arg must be its own cmake.args entry
+          CIBW_CONFIG_SETTINGS_WINDOWS: >-
+            cmake.args=-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+            cmake.args=-DCGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal
 
           # macOS deployment target set to 15.0
           # Supported: macOS 15.0 (Sequoia) and above
