@@ -33,16 +33,9 @@ find_package(pybind11 CONFIG REQUIRED)
 #   macOS < 11.0
 # ============================================================
 if(WIN32)
-    # Windows - CGAL installed via vcpkg
-    # VCPKG_ROOT is set by cibuildwheel environment on GitHub Actions
-    set(VCPKG_ROOT "C:/vcpkg")
-    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file")
-    set(CGAL_DIR "${VCPKG_ROOT}/installed/x64-windows/share/cgal"
-        CACHE STRING "CGAL directory")
     find_package(CGAL REQUIRED HINTS
-        "${VCPKG_ROOT}/installed/x64-windows/share/cgal"
         "$ENV{CGAL_DIR}"
+        "C:/vcpkg/installed/x64-windows/share/cgal"
     )
 elseif(APPLE)
     # Mac - CGAL installed via homebrew
