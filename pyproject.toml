@@ -7,7 +7,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pygeometry"
-version = "0.1.13"
+version = "0.1.14"
 description = "Python bindings for CGAL - Computational Geometry Algorithms Library"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -22,7 +22,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: GNU Affero General Public License v3",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering",
@@ -41,3 +40,5 @@ install.components = ["python_modules"]
 
 [tool.scikit-build.cmake.define]
 CMAKE_INSTALL_PREFIX = ""
+CMAKE_TOOLCHAIN_FILE = "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+CGAL_DIR = "C:/vcpkg/installed/x64-windows/share/cgal"
