@@ -1,10 +1,8 @@
 name: Build and Publish pygeometry
-
 on:
   push:
     tags:
       - "v*"
-
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -13,15 +11,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Install CGAL on Mac
         if: runner.os == 'macOS'
         run: |
           brew install cgal boost
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
         env:
@@ -44,8 +39,13 @@ jobs:
             dir C:/vcpkg/installed/x64-windows/share/cgal/
 
           # Pass all cmake args as a single space-separated string under cmake.args
-          # Do NOT use semicolons - use spaces to separate multiple cmake args
           CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.args=-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCGAL_DIR=C:/vcpkg/installed/x64-windows/share/cgal"
+
+          # macOS deployment target set to 15.0
+          # Supported: macOS 15.0 (Sequoia) and above
+          # Excluded: macOS 14.0 (Sonoma) and older
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=15.0
+          MACOSX_DEPLOYMENT_TARGET: "15.0"
 
           CIBW_BEFORE_BUILD: pip install scikit-build-core pybind11
 
@@ -59,14 +59,12 @@ jobs:
     needs: build_wheels
     runs-on: ubuntu-latest
     if: always()
-
     steps:
       - uses: actions/download-artifact@v4
         with:
           pattern: wheels-*
           merge-multiple: true
           path: dist/
-
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
