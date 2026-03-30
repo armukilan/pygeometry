@@ -32,10 +32,17 @@ find_package(pybind11 CONFIG REQUIRED)
 #   CentOS/RHEL 7 and older (Boost too old)
 #   macOS < 11.0
 # ============================================================
+#if(WIN32)
+#    find_package(CGAL REQUIRED HINTS
+#        "$ENV{CGAL_DIR}"
+#        "C:/vcpkg/installed/x64-windows/share/cgal"
+#    )
+
 if(WIN32)
     find_package(CGAL REQUIRED HINTS
-        "$ENV{CGAL_DIR}"
+        "$ENV{CMAKE_PREFIX_PATH}/share/cgal"
         "C:/vcpkg/installed/x64-windows/share/cgal"
+        "$ENV{CGAL_DIR}"
     )
 elseif(APPLE)
     # Mac - CGAL installed via homebrew
