@@ -1,5 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include "core/points.h"
+#include "core/orientation.h"
 
 // ============================================================
 // WHAT IS THIS FILE?
@@ -33,11 +35,7 @@ double squared_distance(double x1, double y1, double x2, double y2);
 PYBIND11_MODULE(pycglib_core, m) {
     m.doc() = "pycglib - CGAL Python bindings";
 
-    // --------------------------------------------------------
-    // Expose squared_distance to Python
-    // User calls it as: pg.squared_distance((0,0), (3,4))
-    // We unpack the tuples into x1, y1, x2, y2 here
-    // --------------------------------------------------------
+    // --- Distance (original) ---
     m.def("squared_distance",
         [](py::tuple a, py::tuple b) {
             double x1 = a[0].cast<double>();
@@ -48,4 +46,38 @@ PYBIND11_MODULE(pycglib_core, m) {
         },
         py::arg("a"), py::arg("b"),
         "Compute squared distance between two 2D points passed as tuples");
+
+    // --- Point2 ---
+    py::class_<Point2>(m, "Point2")
+        .def(py::init<double, double>())
+        .def_property_readonly("x", &Point2::x)
+        .def_property_readonly("y", &Point2::y)
+        .def("__sub__",  &point2_sub)
+        .def("__add__",  &point2_add_vector)
+        .def("__repr__", [](const Point2& p) {
+            return "Point2(" + std::to_string(p.x()) + ", " + std::to_string(p.y()) + ")";
+        });
+
+    // --- Vector2 ---
+    py::class_<Vector2>(m, "Vector2")
+        .def(py::init<double, double>())
+        .def_property_readonly("x", &Vector2::x)
+        .def_property_readonly("y", &Vector2::y)
+        .def("__add__",  &vector2_add)
+        .def("__mul__",  &vector2_mul)
+        .def("__rmul__", &vector2_mul)
+        .def("__repr__", [](const Vector2& v) {
+            return "Vector2(" + std::to_string(v.x()) + ", " + std::to_string(v.y()) + ")";
+        });
+
+    // --- Orientation ---
+    py::class_<OrientationResult>(m, "OrientationResult")
+        .def("left_turn",  &OrientationResult::left_turn)
+        .def("right_turn", &OrientationResult::right_turn)
+        .def("collinear",  &OrientationResult::collinear)
+        .def("__repr__",   &OrientationResult::str);
+
+    m.def("orientation", &orientation_2,
+          py::arg("p1"), py::arg("p2"), py::arg("p3"),
+          "Returns orientation of three Point2 objects");
 }

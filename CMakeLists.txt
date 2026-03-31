@@ -1,19 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 project(pycglib)
-
 # ============================================================
 # WHAT IS THIS FILE?
 # Generic build file that works on any OS automatically.
 # No hardcoded paths. All paths come from environment variables
 # set by GitHub Actions and cibuildwheel.
 # ============================================================
-
 # Find Python automatically - scikit-build-core handles this
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
-
 # Find pybind11 automatically
 find_package(pybind11 CONFIG REQUIRED)
-
 # ============================================================
 # FIND CGAL - Works on any OS automatically
 # Each platform sets its own paths via environment variables
@@ -32,12 +28,6 @@ find_package(pybind11 CONFIG REQUIRED)
 #   CentOS/RHEL 7 and older (Boost too old)
 #   macOS < 11.0
 # ============================================================
-#if(WIN32)
-#    find_package(CGAL REQUIRED HINTS
-#        "$ENV{CGAL_DIR}"
-#        "C:/vcpkg/installed/x64-windows/share/cgal"
-#    )
-
 if(WIN32)
     find_package(CGAL REQUIRED HINTS
         "$ENV{CMAKE_PREFIX_PATH}/share/cgal"
@@ -64,40 +54,41 @@ else()
         "$ENV{CGAL_DIR}"
     )
 endif()
-
 # ============================================================
 # BUILD THE PYTHON MODULE
-# Add new .cpp files here as you add more CGAL functions:
-# Example:
-# pybind11_add_module(pygeometry_core
-#     src/pygeometry/wrapper.cpp
-#     cgal/distance.cpp
-#     cgal/convex_hull.cpp   ← add new files here
-# )
+# GLOB_RECURSE automatically picks up all .cpp files under src/
+# No need to manually list new files here ever again.
+# Just create your .cpp file anywhere under src/ and it gets
+# included automatically on next build.
+#
+# Structure:
+#   src/
+#   ├── wrapper.cpp               ← pybind11 bindings
+#   ├── core/
+#   │   ├── points.cpp
+#   │   └── orientation.cpp
+#   ├── distance/
+#   │   └── distance.cpp
+#   ├── triangulation/            ← future
+#   ├── convex_hull/              ← future
+#   └── polygon/                  ← future
 # ============================================================
-#pybind11_add_module(pygeometry_core
-#    src/pygeometry/wrapper.cpp
-#    cgal/distance.cpp
-#)
+# file(GLOB_RECURSE ALL_SOURCES "src/*.cpp")
+file(GLOB_RECURSE ALL_SOURCES "src/pycglib/*.cpp")
 
-pybind11_add_module(pycglib_core 
-    src/pycglib/wrapper.cpp
-    cgal/distance.cpp)
+pybind11_add_module(pycglib_core ${ALL_SOURCES})
+
+# src/ as include root so headers resolve as "core/points.h" etc.
+# target_include_directories(pycglib_core PRIVATE src)
+target_include_directories(pycglib_core PRIVATE src/pycglib)
 
 # Link CGAL
-#target_link_libraries(pygeometry_core PRIVATE CGAL::CGAL)
 target_link_libraries(pycglib_core PRIVATE CGAL::CGAL)
-
 # ============================================================
 # INSTALL
 # Places the compiled .pyd/.so file inside the
-# pygeometry package folder so Python can find it
+# pycglib package folder so Python can find it
 # ============================================================
-#install(TARGETS pygeometry_core
-#    DESTINATION pygeometry
-#    COMPONENT python_modules
-#)
-
 install(TARGETS pycglib_core
     DESTINATION pycglib
     COMPONENT python_modules
