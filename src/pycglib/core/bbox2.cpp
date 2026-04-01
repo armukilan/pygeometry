@@ -33,8 +33,16 @@ void bbox2_dilate(Bbox2& b, int dist) {
     b.b.dilate(dist);
 }
 
+// void bbox2_scale(Bbox2& b, double factor) {
+//     b.b.scale(factor);
+// }
 void bbox2_scale(Bbox2& b, double factor) {
-    b.b.scale(factor);
+    double cx     = (b.b.xmin() + b.b.xmax()) / 2.0;
+    double cy     = (b.b.ymin() + b.b.ymax()) / 2.0;
+    double half_w = (b.b.xmax() - b.b.xmin()) / 2.0 * factor;
+    double half_h = (b.b.ymax() - b.b.ymin()) / 2.0 * factor;
+    b.b = CGAL::Bbox_2(cx - half_w, cy - half_h,
+                       cx + half_w, cy + half_h);
 }
 
 bool bbox2_do_overlap(const Bbox2& a, const Bbox2& b) {
