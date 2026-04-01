@@ -10,6 +10,7 @@ typedef Kernel::Line_2       CGALLine2;
 typedef Kernel::Ray_2 CGALRay2;
 typedef Kernel::Triangle_2 CGALTriangle2;
 typedef Kernel::Circle_2 CGALCircle2;
+typedef Kernel::Iso_rectangle_2 CGALIsoRectangle2;
 
 // ─── Point2 ───────────────────────────────────────────────
 struct Point2 {
@@ -121,5 +122,30 @@ struct Circle2 {
     Circle2(const Point2& center, int ori = 1)
         : c(CGALPoint2(center.x(), center.y()),
             ori >= 0 ? CGAL::COUNTERCLOCKWISE : CGAL::CLOCKWISE) {}
+};
+
+
+
+// ─── IsoRectangle2 ────────────────────────────────────────
+struct IsoRectangle2 {
+    CGALIsoRectangle2 r;
+    IsoRectangle2(CGALIsoRectangle2 rect) : r(rect) {}
+    // From two diagonal opposite vertices
+    IsoRectangle2(const Point2& p, const Point2& q)
+        : r(CGALPoint2(p.x(), p.y()), CGALPoint2(q.x(), q.y())) {}
+    // From four vertices: left, right, bottom, top
+    IsoRectangle2(const Point2& left, const Point2& right,
+                  const Point2& bottom, const Point2& top)
+        : r(CGALPoint2(left.x(),   left.y()),
+            CGALPoint2(right.x(),  right.y()),
+            CGALPoint2(bottom.x(), bottom.y()),
+            CGALPoint2(top.x(),    top.y())) {}
+    // From min/max coordinates
+    IsoRectangle2(double min_x, double min_y, double max_x, double max_y)
+        : r(CGALPoint2(min_x, min_y), CGALPoint2(max_x, max_y)) {}
+    // From Bbox2
+    IsoRectangle2(const Bbox2& bbox)
+        : r(CGALPoint2(bbox.xmin, bbox.ymin),
+            CGALPoint2(bbox.xmax, bbox.ymax)) {}
 };
 

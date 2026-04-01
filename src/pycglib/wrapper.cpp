@@ -59,6 +59,7 @@
 #include "core/ray2.h"
 #include "core/triangle2.h"
 #include "core/circle2.h"
+#include "core/iso_rectangle2.h"
 
 
 // Declared from original/distance.cpp
@@ -384,6 +385,44 @@ py::class_<Circle2>(m, "Circle2")
                                     std::to_string(circle2_squared_radius(c)) + ")";
     });
 
+
+// --- IsoRectangle2 ---
+py::class_<IsoRectangle2>(m, "IsoRectangle2")
+    .def(py::init<const Point2&, const Point2&>(),
+         py::arg("p"), py::arg("q"))
+    .def(py::init<const Point2&, const Point2&,
+                  const Point2&, const Point2&>(),
+         py::arg("left"), py::arg("right"),
+         py::arg("bottom"), py::arg("top"))
+    .def(py::init<double, double, double, double>(),
+         py::arg("min_x"), py::arg("min_y"),
+         py::arg("max_x"), py::arg("max_y"))
+    .def(py::init<const Bbox2&>(), py::arg("bbox"))
+    .def("vertex",                &iso_rect2_vertex,              py::arg("i"))
+    .def("__getitem__",           &iso_rect2_vertex,              py::arg("i"))
+    .def("min",                   &iso_rect2_min)
+    .def("max",                   &iso_rect2_max)
+    .def("xmin",                  &iso_rect2_xmin)
+    .def("ymin",                  &iso_rect2_ymin)
+    .def("xmax",                  &iso_rect2_xmax)
+    .def("ymax",                  &iso_rect2_ymax)
+    .def("min_coord",             &iso_rect2_min_coord,           py::arg("i"))
+    .def("max_coord",             &iso_rect2_max_coord,           py::arg("i"))
+    .def("is_degenerate",         &iso_rect2_is_degenerate)
+    .def("bounded_side",          &iso_rect2_bounded_side,        py::arg("p"))
+    .def("has_on_boundary",       &iso_rect2_has_on_boundary,     py::arg("p"))
+    .def("has_on_bounded_side",   &iso_rect2_has_on_bounded_side, py::arg("p"))
+    .def("has_on_unbounded_side", &iso_rect2_has_on_unbounded_side, py::arg("p"))
+    .def("area",                  &iso_rect2_area)
+    .def("bbox",                  &iso_rect2_bbox)
+    .def("__eq__",                &iso_rect2_eq)
+    .def("__ne__",                &iso_rect2_neq)
+    .def("__repr__", [](const IsoRectangle2& r) {
+        return "IsoRectangle2(xmin=" + std::to_string(iso_rect2_xmin(r)) +
+                            ", ymin=" + std::to_string(iso_rect2_ymin(r)) +
+                            ", xmax=" + std::to_string(iso_rect2_xmax(r)) +
+                            ", ymax=" + std::to_string(iso_rect2_ymax(r)) + ")";
+    });
 
 
 }
