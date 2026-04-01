@@ -43,14 +43,6 @@ struct Bbox2 {
         : xmin(xmin), ymin(ymin), xmax(xmax), ymax(ymax) {}
 };
 
-// ─── Line2 (stub — full impl later) ──────────────────────
-struct Line2 {
-    CGALLine2 l;
-    Line2(CGALLine2 line) : l(line) {}
-    double a() const { return CGAL::to_double(l.a()); }
-    double b() const { return CGAL::to_double(l.b()); }
-    double c() const { return CGAL::to_double(l.c()); }
-};
 
 // ─── Segment2 ─────────────────────────────────────────────
 struct Segment2 {
@@ -59,3 +51,19 @@ struct Segment2 {
         : s(CGALPoint2(p.x(), p.y()), CGALPoint2(q.x(), q.y())) {}
     Segment2(CGALSegment2 seg) : s(seg) {}
 };
+
+// ─── Line2 (stub — full impl later) ──────────────────────
+// Replace the Line2 stub with this:
+struct Line2 {
+    CGALLine2 l;
+    Line2(CGALLine2 line) : l(line) {}
+    Line2(double a, double b, double c) : l(a, b, c) {}
+    Line2(const Point2& p, const Point2& q) : l(CGALPoint2(p.x(), p.y()), CGALPoint2(q.x(), q.y())) {}
+    Line2(const Point2& p, const Direction2& d) : l(CGALPoint2(p.x(), p.y()), d.d) {}
+    Line2(const Point2& p, const Vector2& v) : l(CGALPoint2(p.x(), p.y()), v.v) {}
+    Line2(const Segment2& s) : l(s.s) {}
+    double a() const { return CGAL::to_double(l.a()); }
+    double b() const { return CGAL::to_double(l.b()); }
+    double c() const { return CGAL::to_double(l.c()); }
+};
+

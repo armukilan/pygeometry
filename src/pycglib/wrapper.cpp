@@ -55,6 +55,7 @@
 #include "core/segment2.h"
 #include "core/direction2.h"
 #include "core/orientation.h"
+#include "core/line2.h"
 
 
 // Declared from original/distance.cpp
@@ -195,13 +196,50 @@ py::class_<Direction2>(m, "Direction2")
     });
 
 // --- Line2 (stub for now, full version comes later) ---
+// py::class_<Line2>(m, "Line2")
+//     // .def("a", &Line2::a)
+//     // .def("b", &Line2::b)
+//     // .def("c", &Line2::c)
+//     .def_property_readonly("a", &Line2::a)
+//     .def_property_readonly("b", &Line2::b)
+//     .def_property_readonly("c", &Line2::c)
+//     .def("__repr__", [](const Line2& l) {
+//         return "Line2(a=" + std::to_string(l.a()) + ", b=" +
+//                              std::to_string(l.b()) + ", c=" +
+//                              std::to_string(l.c()) + ")";
+//     });
+// --- Line2 ---
 py::class_<Line2>(m, "Line2")
-    // .def("a", &Line2::a)
-    // .def("b", &Line2::b)
-    // .def("c", &Line2::c)
-    .def_property_readonly("a", &Line2::a)
-    .def_property_readonly("b", &Line2::b)
-    .def_property_readonly("c", &Line2::c)
+    .def(py::init<double, double, double>(),
+         py::arg("a"), py::arg("b"), py::arg("c"))
+    .def(py::init<const Point2&, const Point2&>(),
+         py::arg("p"), py::arg("q"))
+    .def(py::init<const Point2&, const Direction2&>(),
+         py::arg("p"), py::arg("d"))
+    .def(py::init<const Point2&, const Vector2&>(),
+         py::arg("p"), py::arg("v"))
+    .def(py::init<const Segment2&>(),
+         py::arg("s"))
+    .def_property_readonly("a",   &Line2::a)
+    .def_property_readonly("b",   &Line2::b)
+    .def_property_readonly("c",   &Line2::c)
+    .def("point",                 &line2_point,        py::arg("i"))
+    .def("projection",            &line2_projection,   py::arg("p"))
+    .def("x_at_y",                &line2_x_at_y,       py::arg("y"))
+    .def("y_at_x",                &line2_y_at_x,       py::arg("x"))
+    .def("is_degenerate",         &line2_is_degenerate)
+    .def("is_horizontal",         &line2_is_horizontal)
+    .def("is_vertical",           &line2_is_vertical)
+    .def("oriented_side",         &line2_oriented_side,         py::arg("p"))
+    .def("has_on",                &line2_has_on,                py::arg("p"))
+    .def("has_on_positive_side",  &line2_has_on_positive_side,  py::arg("p"))
+    .def("has_on_negative_side",  &line2_has_on_negative_side,  py::arg("p"))
+    .def("to_vector",             &line2_to_vector)
+    .def("direction",             &line2_direction)
+    .def("opposite",              &line2_opposite)
+    .def("perpendicular",         &line2_perpendicular,         py::arg("p"))
+    .def("__eq__",                &line2_eq)
+    .def("__ne__",                &line2_neq)
     .def("__repr__", [](const Line2& l) {
         return "Line2(a=" + std::to_string(l.a()) + ", b=" +
                              std::to_string(l.b()) + ", c=" +
