@@ -55,7 +55,8 @@
 
 
 // Declared from original/distance.cpp
-double run_distance(double x1, double y1, double x2, double y2);
+// double run_distance(double x1, double y1, double x2, double y2);
+double squared_distance(double x1, double y1, double x2, double y2);
 
 // Add more declarations here as you add more C++ files
 // Example:
@@ -93,7 +94,7 @@ PYBIND11_MODULE(pycglib_core, m) {
 
     // Exposes run_distance() from original/distance.cpp to Python
     // Python calls it as: cgal_python.run_distance(x1, y1, x2, y2)
-    m.def("run_distance", &run_distance,
+    m.def("squared_distance", &run_distance,
           py::arg("x1"), py::arg("y1"),
           py::arg("x2"), py::arg("y2"));
 
