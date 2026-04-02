@@ -1,6 +1,7 @@
 #pragma once
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/Bbox_2.h>
+#include <CGAL/Bbox_3.h>
 
 typedef CGAL::Simple_cartesian<double> Kernel;
 typedef Kernel::Point_2      CGALPoint2;
@@ -14,6 +15,13 @@ typedef Kernel::Circle_2 CGALCircle2;
 typedef Kernel::Iso_rectangle_2 CGALIsoRectangle2;
 typedef Kernel::Weighted_point_2 CGALWeightedPoint2;
 typedef Kernel::Aff_transformation_2 CGALAffTransformation2;
+
+// ─── 3D Typedefs ──────────────────────────────────────────
+typedef Kernel::Point_3   CGALPoint3;
+typedef Kernel::Vector_3  CGALVector3;
+// typedef Kernel::Bbox_3    CGALBbox3;
+typedef CGAL::Bbox_3 CGALBbox3;
+
 
 
 // ─── Point2 ───────────────────────────────────────────────
@@ -245,3 +253,65 @@ struct AffTransformation2 {
 //     auto pt = wp.wp.point();
 //     return Point2(CGAL::to_double(pt.x()), CGAL::to_double(pt.y()));
 // }
+
+
+// ─── Point3 ───────────────────────────────────────────────
+struct Point3 {
+    CGALPoint3 p;
+
+    Point3() : p(CGAL::ORIGIN) {}
+    Point3(double x, double y, double z) : p(x, y, z) {}
+    Point3(int x, int y, int z) : p(x, y, z) {}
+    Point3(CGALPoint3 pt) : p(pt) {}
+
+    double x()  const { return CGAL::to_double(p.x()); }
+    double y()  const { return CGAL::to_double(p.y()); }
+    double z()  const { return CGAL::to_double(p.z()); }
+    double hx() const { return CGAL::to_double(p.hx()); }
+    double hy() const { return CGAL::to_double(p.hy()); }
+    double hz() const { return CGAL::to_double(p.hz()); }
+    double hw() const { return CGAL::to_double(p.hw()); }
+
+    double cartesian(int i)   const { return CGAL::to_double(p.cartesian(i)); }
+    double homogeneous(int i) const { return CGAL::to_double(p.homogeneous(i)); }
+    double operator[](int i)  const { return CGAL::to_double(p.cartesian(i)); }
+    int    dimension()        const { return p.dimension(); }
+};
+
+// ─── Vector3 ──────────────────────────────────────────────
+struct Vector3 {
+    CGALVector3 v;
+
+    Vector3(double x, double y, double z) : v(x, y, z) {}
+    Vector3(int x, int y, int z) : v(x, y, z) {}
+    Vector3(CGALVector3 vec) : v(vec) {}
+
+    double x()  const { return CGAL::to_double(v.x()); }
+    double y()  const { return CGAL::to_double(v.y()); }
+    double z()  const { return CGAL::to_double(v.z()); }
+    double hx() const { return CGAL::to_double(v.hx()); }
+    double hy() const { return CGAL::to_double(v.hy()); }
+    double hz() const { return CGAL::to_double(v.hz()); }
+    double hw() const { return CGAL::to_double(v.hw()); }
+
+    double cartesian(int i)   const { return CGAL::to_double(v.cartesian(i)); }
+    double homogeneous(int i) const { return CGAL::to_double(v.homogeneous(i)); }
+    double operator[](int i)  const { return CGAL::to_double(v.cartesian(i)); }
+    int    dimension()        const { return v.dimension(); }
+};
+
+// ─── Bbox3 ────────────────────────────────────────────────
+struct Bbox3 {
+    CGAL::Bbox_3 b;
+    Bbox3() : b() {}
+    Bbox3(double xmin, double ymin, double zmin,
+          double xmax, double ymax, double zmax)
+        : b(xmin, ymin, zmin, xmax, ymax, zmax) {}
+    Bbox3(CGAL::Bbox_3 bbox) : b(bbox) {}
+    double xmin() const { return b.xmin(); }
+    double ymin() const { return b.ymin(); }
+    double zmin() const { return b.zmin(); }
+    double xmax() const { return b.xmax(); }
+    double ymax() const { return b.ymax(); }
+    double zmax() const { return b.zmax(); }
+};

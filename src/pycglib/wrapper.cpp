@@ -64,6 +64,8 @@
 #include "core/weighted_point2.h"
 #include "core/aff_transformation2.h"
 
+#include "core/point3.h"
+
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
 double squared_distance(double x1, double y1, double x2, double y2);
@@ -606,6 +608,90 @@ py::class_<AffTransformation2>(m, "AffTransformation2")
                ", m01=" + std::to_string(aff2_cartesian(t, 0, 1)) +
                ", m10=" + std::to_string(aff2_cartesian(t, 1, 0)) +
                ", m11=" + std::to_string(aff2_cartesian(t, 1, 1)) + ")";
+    });
+
+
+
+
+// --- Bbox3 ---
+py::class_<Bbox3>(m, "Bbox3")
+    .def(py::init<>())
+    .def(py::init<double, double, double, double, double, double>(),
+         py::arg("xmin"), py::arg("ymin"), py::arg("zmin"),
+         py::arg("xmax"), py::arg("ymax"), py::arg("zmax"))
+    .def_property_readonly("xmin", &Bbox3::xmin)
+    .def_property_readonly("ymin", &Bbox3::ymin)
+    .def_property_readonly("zmin", &Bbox3::zmin)
+    .def_property_readonly("xmax", &Bbox3::xmax)
+    .def_property_readonly("ymax", &Bbox3::ymax)
+    .def_property_readonly("zmax", &Bbox3::zmax)
+    .def("__repr__", [](const Bbox3& b) {
+        return "Bbox3(" + std::to_string(b.xmin()) + ", " +
+                          std::to_string(b.ymin()) + ", " +
+                          std::to_string(b.zmin()) + ", " +
+                          std::to_string(b.xmax()) + ", " +
+                          std::to_string(b.ymax()) + ", " +
+                          std::to_string(b.zmax()) + ")";
+    });
+
+// --- Point3 ---
+py::class_<Point3>(m, "Point3")
+    .def(py::init<>())
+    .def(py::init<double, double, double>(), py::arg("x"), py::arg("y"), py::arg("z"))
+    .def(py::init<int, int, int>(),          py::arg("x"), py::arg("y"), py::arg("z"))
+    .def_property_readonly("x",  &Point3::x)
+    .def_property_readonly("y",  &Point3::y)
+    .def_property_readonly("z",  &Point3::z)
+    .def_property_readonly("hx", &Point3::hx)
+    .def_property_readonly("hy", &Point3::hy)
+    .def_property_readonly("hz", &Point3::hz)
+    .def_property_readonly("hw", &Point3::hw)
+    .def("cartesian",   &Point3::cartesian,   py::arg("i"))
+    .def("homogeneous", &Point3::homogeneous, py::arg("i"))
+    .def("dimension",   &Point3::dimension)
+    .def("bbox",        &point3_bbox)
+    .def("__getitem__", &Point3::operator[],  py::arg("i"))
+    .def("__sub__",     &point3_sub)
+    .def("__add__",     &point3_add_vector)
+    .def("__sub__",     &point3_sub_vector)
+    .def("__iadd__",    &point3_iadd)
+    .def("__isub__",    &point3_isub)
+    .def("__eq__",      &point3_eq)
+    .def("__ne__",      &point3_neq)
+    .def("__lt__",      &point3_lt)
+    .def("__gt__",      &point3_gt)
+    .def("__le__",      &point3_le)
+    .def("__ge__",      &point3_ge)
+    .def("__repr__", [](const Point3& p) {
+        return "Point3(" + std::to_string(p.x()) + ", " +
+                           std::to_string(p.y()) + ", " +
+                           std::to_string(p.z()) + ")";
+    });
+
+// --- Vector3 ---
+py::class_<Vector3>(m, "Vector3")
+    .def(py::init<double, double, double>(), py::arg("x"), py::arg("y"), py::arg("z"))
+    .def(py::init<int, int, int>(),          py::arg("x"), py::arg("y"), py::arg("z"))
+    .def_property_readonly("x",  &Vector3::x)
+    .def_property_readonly("y",  &Vector3::y)
+    .def_property_readonly("z",  &Vector3::z)
+    .def_property_readonly("hx", &Vector3::hx)
+    .def_property_readonly("hy", &Vector3::hy)
+    .def_property_readonly("hz", &Vector3::hz)
+    .def_property_readonly("hw", &Vector3::hw)
+    .def("cartesian",   &Vector3::cartesian,   py::arg("i"))
+    .def("homogeneous", &Vector3::homogeneous, py::arg("i"))
+    .def("dimension",   &Vector3::dimension)
+    .def("__getitem__", &Vector3::operator[],  py::arg("i"))
+    .def("__add__",     &vector3_add)
+    .def("__sub__",     &vector3_sub)
+    .def("__mul__",     &vector3_mul)
+    .def("__rmul__",    &vector3_mul)
+    .def("__neg__",     &vector3_neg)
+    .def("__repr__", [](const Vector3& v) {
+        return "Vector3(" + std::to_string(v.x()) + ", " +
+                            std::to_string(v.y()) + ", " +
+                            std::to_string(v.z()) + ")";
     });
 
 
