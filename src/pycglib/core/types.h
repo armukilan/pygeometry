@@ -25,6 +25,7 @@ typedef Kernel::Direction_3 CGALDirection3;
 typedef Kernel::Segment_3 CGALSegment3;
 typedef Kernel::Line_3 CGALLine3;
 typedef Kernel::Plane_3 CGALPlane3;
+typedef Kernel::Ray_3 CGALRay3;
 
 
 
@@ -365,5 +366,20 @@ struct Line3 {
 struct Plane3 {
     Kernel::Plane_3 p;
     Plane3(Kernel::Plane_3 plane) : p(plane) {}
+};
+
+// ─── Ray3 ─────────────────────────────────────────────────
+struct Ray3 {
+    CGALRay3 r;
+    Ray3(CGALRay3 ray) : r(ray) {}
+    Ray3(const Point3& p, const Point3& q)
+        : r(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z())) {}
+    Ray3(const Point3& p, const Direction3& d)
+        : r(CGALPoint3(p.x(), p.y(), p.z()), d.d) {}
+    Ray3(const Point3& p, const Vector3& v)
+        : r(CGALPoint3(p.x(), p.y(), p.z()), v.v) {}
+    Ray3(const Point3& p, const Line3& l)
+        : r(CGALPoint3(p.x(), p.y(), p.z()), l.l) {}
 };
 

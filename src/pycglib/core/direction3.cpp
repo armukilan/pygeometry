@@ -4,6 +4,12 @@
 
 #include "core/line3.h"
 
+#include "core/ray3.h"
+
+Direction3 direction3_from_ray(const Ray3& r) {
+    return Direction3(r.r.direction());
+}
+
 Direction3 direction3_from_line(const Line3& l) {
     return Direction3(l.l.direction());
 }

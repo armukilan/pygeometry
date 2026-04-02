@@ -1,5 +1,11 @@
 #include "core/line3.h"
 
+#include "core/ray3.h"
+
+Line3 line3_from_ray(const Ray3& r) {
+    return Line3(r.r.supporting_line());
+}
+
 bool line3_eq(const Line3& a, const Line3& b) {
     return a.l == b.l;
 }

@@ -68,6 +68,7 @@
 #include "core/direction3.h"
 #include "core/segment3.h"
 #include "core/line3.h"
+#include "core/ray3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -716,6 +717,7 @@ py::class_<Direction3>(m, "Direction3")
     .def(py::init(&direction3_from_vector), py::arg("v"))
     .def(py::init(&direction3_from_segment), py::arg("s"))
     .def(py::init(&direction3_from_line), py::arg("l"))
+    .def(py::init(&direction3_from_ray), py::arg("r"))
     .def_property_readonly("dx",    &Direction3::dx)
     .def_property_readonly("dy",    &Direction3::dy)
     .def_property_readonly("dz",    &Direction3::dz)
@@ -754,6 +756,8 @@ py::class_<Line3>(m, "Line3")
          py::arg("p"), py::arg("v"))
     .def(py::init<const Segment3&>(),
          py::arg("s"))
+    // .def("from_ray", &line3_from_ray, py::arg("r"))
+    .def_static("from_ray", &line3_from_ray, py::arg("r"))
     .def("projection",          &line3_projection,          py::arg("p"))
     .def("point",               &line3_point,               py::arg("i"))
     .def("is_degenerate",       &line3_is_degenerate)
@@ -801,6 +805,38 @@ py::class_<Segment3>(m, "Segment3")
                                std::to_string(tgt.x()) + ", " +
                                std::to_string(tgt.y()) + ", " +
                                std::to_string(tgt.z()) + "))";
+    });
+
+
+// --- Ray3 ---
+py::class_<Ray3>(m, "Ray3")
+    .def(py::init<const Point3&, const Point3&>(),
+         py::arg("p"), py::arg("q"))
+    .def(py::init<const Point3&, const Direction3&>(),
+         py::arg("p"), py::arg("d"))
+    .def(py::init<const Point3&, const Vector3&>(),
+         py::arg("p"), py::arg("v"))
+    .def(py::init<const Point3&, const Line3&>(),
+         py::arg("p"), py::arg("l"))
+    .def("source",          &ray3_source)
+    .def("point",           &ray3_point,          py::arg("i"))
+    .def("direction",       &ray3_direction)
+    .def("to_vector",       &ray3_to_vector)
+    .def("supporting_line", &ray3_supporting_line)
+    .def("opposite",        &ray3_opposite)
+    .def("is_degenerate",   &ray3_is_degenerate)
+    .def("has_on",          &ray3_has_on,         py::arg("p"))
+    .def("__eq__",          &ray3_eq)
+    .def("__ne__",          &ray3_neq)
+    .def("__repr__", [](const Ray3& r) {
+        auto s = ray3_source(r);
+        auto d = ray3_direction(r);
+        return "Ray3(source=(" + std::to_string(s.x()) + ", " +
+                                  std::to_string(s.y()) + ", " +
+                                  std::to_string(s.z()) + "), direction=(" +
+                                  std::to_string(d.dx()) + ", " +
+                                  std::to_string(d.dy()) + ", " +
+                                  std::to_string(d.dz()) + "))";
     });
 
 

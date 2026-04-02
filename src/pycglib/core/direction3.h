@@ -6,6 +6,7 @@ Direction3 direction3_from_vector(const Vector3& v);
 Direction3 direction3_from_xyz(double x, double y, double z);
 Direction3 direction3_from_segment(const Segment3& s);
 Direction3 direction3_from_line(const Line3& l);
+Direction3 direction3_from_ray(const Ray3& r);
 
 // --- Operations ---
 bool       direction3_eq(const Direction3& a, const Direction3& b);
