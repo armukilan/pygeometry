@@ -61,7 +61,7 @@
 #include "core/circle2.h"
 #include "core/iso_rectangle2.h"
 #include "core/bbox2.h"
-
+#include "core/weighted_point2.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -450,6 +450,34 @@ py::class_<IsoRectangle2>(m, "IsoRectangle2")
                             ", ymin=" + std::to_string(iso_rect2_ymin(r)) +
                             ", xmax=" + std::to_string(iso_rect2_xmax(r)) +
                             ", ymax=" + std::to_string(iso_rect2_ymax(r)) + ")";
+    });
+
+
+    // --- WeightedPoint2 ---
+py::class_<WeightedPoint2>(m, "WeightedPoint2")
+    .def(py::init<>())
+    .def(py::init<const Point2&>(),         py::arg("p"))
+    .def(py::init<const Point2&, double>(), py::arg("p"), py::arg("w"))
+    .def(py::init<double, double>(),        py::arg("x"), py::arg("y"))
+    .def("point",       &wp2_point)
+    .def("weight",      &wp2_weight)
+    .def("hx",          &wp2_hx)
+    .def("hy",          &wp2_hy)
+    .def("hw",          &wp2_hw)
+    .def("x",           &wp2_x)
+    .def("y",           &wp2_y)
+    .def("homogeneous", &wp2_homogeneous,   py::arg("i"))
+    .def("cartesian",   &wp2_cartesian,     py::arg("i"))
+    .def("__getitem__", &wp2_cartesian,     py::arg("i"))
+    .def("dimension",   &wp2_dimension)
+    .def("bbox",        &wp2_bbox)
+    .def("__eq__",      &wp2_eq)
+    .def("__ne__",      &wp2_neq)
+    .def("__repr__", [](const WeightedPoint2& wp) {
+        return "WeightedPoint2(point=(" +
+               std::to_string(wp2_x(wp)) + ", " +
+               std::to_string(wp2_y(wp)) + "), weight=" +
+               std::to_string(wp2_weight(wp)) + ")";
     });
 
 

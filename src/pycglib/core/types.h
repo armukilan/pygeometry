@@ -12,6 +12,8 @@ typedef Kernel::Ray_2 CGALRay2;
 typedef Kernel::Triangle_2 CGALTriangle2;
 typedef Kernel::Circle_2 CGALCircle2;
 typedef Kernel::Iso_rectangle_2 CGALIsoRectangle2;
+typedef Kernel::Weighted_point_2 CGALWeightedPoint2;
+
 
 // ─── Point2 ───────────────────────────────────────────────
 struct Point2 {
@@ -165,3 +167,20 @@ struct IsoRectangle2 {
         CGALPoint2(bbox.xmax(), bbox.ymax())) {}
 };
 
+
+// ─── WeightedPoint2 ───────────────────────────────────────
+struct WeightedPoint2 {
+    CGALWeightedPoint2 wp;
+    WeightedPoint2(CGALWeightedPoint2 p) : wp(p) {}
+    // From origin
+    WeightedPoint2() : wp(CGAL::ORIGIN) {}
+    // From point only, weight 0
+    WeightedPoint2(const Point2& p)
+        : wp(CGALPoint2(p.x(), p.y())) {}
+    // From point and weight
+    WeightedPoint2(const Point2& p, double w)
+        : wp(CGALPoint2(p.x(), p.y()), w) {}
+    // From x, y coordinates, weight 0
+    WeightedPoint2(double x, double y)
+        : wp(CGALPoint2(x, y)) {}
+};
