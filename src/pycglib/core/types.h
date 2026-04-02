@@ -24,6 +24,7 @@ typedef CGAL::Bbox_3 CGALBbox3;
 typedef Kernel::Direction_3 CGALDirection3;
 typedef Kernel::Segment_3 CGALSegment3;
 typedef Kernel::Line_3 CGALLine3;
+typedef Kernel::Plane_3 CGALPlane3;
 
 
 
@@ -341,8 +342,28 @@ struct Segment3 {
 };
 
 // ─── Line3 stub ───────────────────────────────────────────
+// struct Line3 {
+//     Kernel::Line_3 l;
+//     Line3(Kernel::Line_3 line) : l(line) {}
+// };
+
+// ─── Line3 ────────────────────────────────────────────────
 struct Line3 {
-    Kernel::Line_3 l;
-    Line3(Kernel::Line_3 line) : l(line) {}
+    CGALLine3 l;
+    Line3(CGALLine3 line) : l(line) {}
+    Line3(const Point3& p, const Point3& q)
+        : l(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z())) {}
+    Line3(const Point3& p, const Direction3& d)
+        : l(CGALPoint3(p.x(), p.y(), p.z()), d.d) {}
+    Line3(const Point3& p, const Vector3& v)
+        : l(CGALPoint3(p.x(), p.y(), p.z()), v.v) {}
+    Line3(const Segment3& s) : l(s.s) {}
+};
+
+// ─── Plane3 stub (full impl later) ───────────────────────
+struct Plane3 {
+    Kernel::Plane_3 p;
+    Plane3(Kernel::Plane_3 plane) : p(plane) {}
 };
 

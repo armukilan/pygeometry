@@ -67,6 +67,7 @@
 #include "core/point3.h"
 #include "core/direction3.h"
 #include "core/segment3.h"
+#include "core/line3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -714,6 +715,7 @@ py::class_<Direction3>(m, "Direction3")
          py::arg("x"), py::arg("y"), py::arg("z"))
     .def(py::init(&direction3_from_vector), py::arg("v"))
     .def(py::init(&direction3_from_segment), py::arg("s"))
+    .def(py::init(&direction3_from_line), py::arg("l"))
     .def_property_readonly("dx",    &Direction3::dx)
     .def_property_readonly("dy",    &Direction3::dy)
     .def_property_readonly("dz",    &Direction3::dz)
@@ -731,9 +733,42 @@ py::class_<Direction3>(m, "Direction3")
 
 
 // --- Line3 stub (full version comes later) ---
+// py::class_<Line3>(m, "Line3")
+//     .def("__repr__", [](const Line3&) {
+//         return "Line3()";
+//     });
+
+// --- Plane3 stub (full version comes later) ---
+py::class_<Plane3>(m, "Plane3")
+    .def("__repr__", [](const Plane3&) {
+        return "Plane3()";
+    });
+
+// --- Line3 ---
 py::class_<Line3>(m, "Line3")
-    .def("__repr__", [](const Line3&) {
-        return "Line3()";
+    .def(py::init<const Point3&, const Point3&>(),
+         py::arg("p"), py::arg("q"))
+    .def(py::init<const Point3&, const Direction3&>(),
+         py::arg("p"), py::arg("d"))
+    .def(py::init<const Point3&, const Vector3&>(),
+         py::arg("p"), py::arg("v"))
+    .def(py::init<const Segment3&>(),
+         py::arg("s"))
+    .def("projection",          &line3_projection,          py::arg("p"))
+    .def("point",               &line3_point,               py::arg("i"))
+    .def("is_degenerate",       &line3_is_degenerate)
+    .def("has_on",              &line3_has_on,              py::arg("p"))
+    .def("perpendicular_plane", &line3_perpendicular_plane, py::arg("p"))
+    .def("opposite",            &line3_opposite)
+    .def("to_vector",           &line3_to_vector)
+    .def("direction",           &line3_direction)
+    .def("__eq__",              &line3_eq)
+    .def("__ne__",              &line3_neq)
+    .def("__repr__", [](const Line3& l) {
+        auto v = line3_to_vector(l);
+        return "Line3(direction=(" + std::to_string(v.x()) + ", " +
+                                     std::to_string(v.y()) + ", " +
+                                     std::to_string(v.z()) + "))";
     });
 
 // --- Segment3 ---
