@@ -362,11 +362,46 @@ struct Line3 {
     Line3(const Segment3& s) : l(s.s) {}
 };
 
-// ─── Plane3 stub (full impl later) ───────────────────────
+// // ─── Plane3 stub (full impl later) ───────────────────────
+// struct Plane3 {
+//     Kernel::Plane_3 p;
+//     Plane3(Kernel::Plane_3 plane) : p(plane) {}
+// };
+
+
+// ─── Plane3 ───────────────────────────────────────────────
 struct Plane3 {
-    Kernel::Plane_3 p;
-    Plane3(Kernel::Plane_3 plane) : p(plane) {}
+    CGALPlane3 p;
+    Plane3(CGALPlane3 plane) : p(plane) {}
+    // From a, b, c, d coefficients
+    Plane3(double a, double b, double c, double d) : p(a, b, c, d) {}
+    // From three points
+    Plane3(const Point3& p1, const Point3& p2, const Point3& p3)
+        : p(CGALPoint3(p1.x(), p1.y(), p1.z()),
+            CGALPoint3(p2.x(), p2.y(), p2.z()),
+            CGALPoint3(p3.x(), p3.y(), p3.z())) {}
+    // From point and vector
+    Plane3(const Point3& pt, const Vector3& v)
+        : p(CGALPoint3(pt.x(), pt.y(), pt.z()), v.v) {}
+    // From point and direction
+    Plane3(const Point3& pt, const Direction3& d)
+        : p(CGALPoint3(pt.x(), pt.y(), pt.z()), d.d) {}
+    // From line and point
+    Plane3(const Line3& l, const Point3& pt)
+        : p(l.l, CGALPoint3(pt.x(), pt.y(), pt.z())) {}
+    // From ray and point
+    // Plane3(const Ray3& r, const Point3& pt)
+    //     : p(r.r, CGALPoint3(pt.x(), pt.y(), pt.z())) {}
+    // From segment and point
+    // Plane3(const Segment3& s, const Point3& pt)
+    //     : p(s.s, CGALPoint3(pt.x(), pt.y(), pt.z())) {}
+    double a() const { return CGAL::to_double(p.a()); }
+    double b() const { return CGAL::to_double(p.b()); }
+    double c() const { return CGAL::to_double(p.c()); }
+    double d() const { return CGAL::to_double(p.d()); }
 };
+
+
 
 // ─── Ray3 ─────────────────────────────────────────────────
 struct Ray3 {

@@ -69,6 +69,7 @@
 #include "core/segment3.h"
 #include "core/line3.h"
 #include "core/ray3.h"
+#include "core/plane3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -740,10 +741,59 @@ py::class_<Direction3>(m, "Direction3")
 //         return "Line3()";
 //     });
 
-// --- Plane3 stub (full version comes later) ---
+// // --- Plane3 stub (full version comes later) ---
+// py::class_<Plane3>(m, "Plane3")
+//     .def("__repr__", [](const Plane3&) {
+//         return "Plane3()";
+//     });
+
+
+
+// --- Plane3 ---
 py::class_<Plane3>(m, "Plane3")
-    .def("__repr__", [](const Plane3&) {
-        return "Plane3()";
+    .def(py::init<double, double, double, double>(),
+         py::arg("a"), py::arg("b"), py::arg("c"), py::arg("d"))
+    .def(py::init<const Point3&, const Point3&, const Point3&>(),
+         py::arg("p"), py::arg("q"), py::arg("r"))
+    .def(py::init<const Point3&, const Vector3&>(),
+         py::arg("p"), py::arg("v"))
+    .def(py::init<const Point3&, const Direction3&>(),
+         py::arg("p"), py::arg("d"))
+    .def(py::init<const Line3&, const Point3&>(),
+         py::arg("l"), py::arg("p"))
+    // .def(py::init<const Ray3&, const Point3&>(),
+    //      py::arg("r"), py::arg("p"))
+    // .def(py::init<const Segment3&, const Point3&>(),
+    //      py::arg("s"), py::arg("p"))
+    .def_static("from_ray",     &plane3_from_ray,     py::arg("r"), py::arg("p"))
+    .def_static("from_segment", &plane3_from_segment, py::arg("s"), py::arg("p"))
+    .def_property_readonly("a", &Plane3::a)
+    .def_property_readonly("b", &Plane3::b)
+    .def_property_readonly("c", &Plane3::c)
+    .def_property_readonly("d", &Plane3::d)
+    .def("perpendicular_line",   &plane3_perpendicular_line,   py::arg("p"))
+    .def("projection",           &plane3_projection,           py::arg("p"))
+    .def("opposite",             &plane3_opposite)
+    .def("point",                &plane3_point)
+    .def("orthogonal_vector",    &plane3_orthogonal_vector)
+    .def("orthogonal_direction", &plane3_orthogonal_direction)
+    .def("base1",                &plane3_base1)
+    .def("base2",                &plane3_base2)
+    .def("to_2d",                &plane3_to_2d,                py::arg("p"))
+    .def("to_3d",                &plane3_to_3d,                py::arg("p"))
+    .def("oriented_side",        &plane3_oriented_side,        py::arg("p"))
+    .def("has_on",               &plane3_has_on_point,         py::arg("p"))
+    .def("has_on_line",          &plane3_has_on_line,          py::arg("l"))
+    .def("has_on_positive_side", &plane3_has_on_positive_side, py::arg("p"))
+    .def("has_on_negative_side", &plane3_has_on_negative_side, py::arg("p"))
+    .def("is_degenerate",        &plane3_is_degenerate)
+    .def("__eq__",               &plane3_eq)
+    .def("__ne__",               &plane3_neq)
+    .def("__repr__", [](const Plane3& h) {
+        return "Plane3(a=" + std::to_string(h.a()) +
+               ", b=" + std::to_string(h.b()) +
+               ", c=" + std::to_string(h.c()) +
+               ", d=" + std::to_string(h.d()) + ")";
     });
 
 // --- Line3 ---
