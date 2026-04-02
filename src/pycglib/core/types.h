@@ -21,6 +21,7 @@ typedef Kernel::Point_3   CGALPoint3;
 typedef Kernel::Vector_3  CGALVector3;
 // typedef Kernel::Bbox_3    CGALBbox3;
 typedef CGAL::Bbox_3 CGALBbox3;
+typedef Kernel::Direction_3 CGALDirection3;
 
 
 
@@ -301,6 +302,17 @@ struct Vector3 {
     int    dimension()        const { return v.dimension(); }
 };
 
+// ─── Direction3 ───────────────────────────────────────────
+struct Direction3 {
+    CGALDirection3 d;
+    Direction3(CGALDirection3 dir) : d(dir) {}
+    Direction3(double x, double y, double z) : d(x, y, z) {}
+    double dx()        const { return CGAL::to_double(d.dx()); }
+    double dy()        const { return CGAL::to_double(d.dy()); }
+    double dz()        const { return CGAL::to_double(d.dz()); }
+    double delta(int i) const { return CGAL::to_double(d.delta(i)); }
+};
+
 // ─── Bbox3 ────────────────────────────────────────────────
 struct Bbox3 {
     CGAL::Bbox_3 b;
@@ -316,3 +328,4 @@ struct Bbox3 {
     double ymax() const { return b.ymax(); }
     double zmax() const { return b.zmax(); }
 };
+

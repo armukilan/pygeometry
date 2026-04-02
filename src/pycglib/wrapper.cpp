@@ -65,6 +65,7 @@
 #include "core/aff_transformation2.h"
 
 #include "core/point3.h"
+#include "core/direction3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -696,10 +697,34 @@ py::class_<Vector3>(m, "Vector3")
     .def("__mul__",     &vector3_mul)
     .def("__rmul__",    &vector3_mul)
     .def("__neg__",     &vector3_neg)
+    .def("direction", [](const Vector3& v) {
+    return Direction3(CGALDirection3(v.v));
+    })
     .def("__repr__", [](const Vector3& v) {
         return "Vector3(" + std::to_string(v.x()) + ", " +
                             std::to_string(v.y()) + ", " +
                             std::to_string(v.z()) + ")";
+    });
+
+
+    // --- Direction3 ---
+py::class_<Direction3>(m, "Direction3")
+    .def(py::init<double, double, double>(),
+         py::arg("x"), py::arg("y"), py::arg("z"))
+    .def(py::init(&direction3_from_vector), py::arg("v"))
+    .def_property_readonly("dx",    &Direction3::dx)
+    .def_property_readonly("dy",    &Direction3::dy)
+    .def_property_readonly("dz",    &Direction3::dz)
+    .def("delta",                   &Direction3::delta,  py::arg("i"))
+    .def("vector",                  &direction3_vector)
+    .def("opposite",                &direction3_opposite)
+    .def("__neg__",                 &direction3_opposite)
+    .def("__eq__",                  &direction3_eq)
+    .def("__ne__",                  &direction3_neq)
+    .def("__repr__", [](const Direction3& d) {
+        return "Direction3(" + std::to_string(d.dx()) + ", " +
+                               std::to_string(d.dy()) + ", " +
+                               std::to_string(d.dz()) + ")";
     });
 
 
