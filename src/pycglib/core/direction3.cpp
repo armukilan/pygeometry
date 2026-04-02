@@ -1,5 +1,11 @@
 #include "core/direction3.h"
 
+#include "core/segment3.h"
+
+Direction3 direction3_from_segment(const Segment3& s) {
+    return Direction3(s.s.direction());
+}
+
 Direction3 direction3_from_vector(const Vector3& v) {
     return Direction3(CGALDirection3(v.v));
 }

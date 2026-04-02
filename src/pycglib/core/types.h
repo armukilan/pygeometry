@@ -22,6 +22,8 @@ typedef Kernel::Vector_3  CGALVector3;
 // typedef Kernel::Bbox_3    CGALBbox3;
 typedef CGAL::Bbox_3 CGALBbox3;
 typedef Kernel::Direction_3 CGALDirection3;
+typedef Kernel::Segment_3 CGALSegment3;
+typedef Kernel::Line_3 CGALLine3;
 
 
 
@@ -327,5 +329,20 @@ struct Bbox3 {
     double xmax() const { return b.xmax(); }
     double ymax() const { return b.ymax(); }
     double zmax() const { return b.zmax(); }
+};
+
+// ─── Segment3 ─────────────────────────────────────────────
+struct Segment3 {
+    CGALSegment3 s;
+    Segment3(CGALSegment3 seg) : s(seg) {}
+    Segment3(const Point3& p, const Point3& q)
+        : s(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z())) {}
+};
+
+// ─── Line3 stub ───────────────────────────────────────────
+struct Line3 {
+    Kernel::Line_3 l;
+    Line3(Kernel::Line_3 line) : l(line) {}
 };
 

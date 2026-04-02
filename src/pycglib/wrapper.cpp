@@ -66,6 +66,7 @@
 
 #include "core/point3.h"
 #include "core/direction3.h"
+#include "core/segment3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -712,6 +713,7 @@ py::class_<Direction3>(m, "Direction3")
     .def(py::init<double, double, double>(),
          py::arg("x"), py::arg("y"), py::arg("z"))
     .def(py::init(&direction3_from_vector), py::arg("v"))
+    .def(py::init(&direction3_from_segment), py::arg("s"))
     .def_property_readonly("dx",    &Direction3::dx)
     .def_property_readonly("dy",    &Direction3::dy)
     .def_property_readonly("dz",    &Direction3::dz)
@@ -725,6 +727,45 @@ py::class_<Direction3>(m, "Direction3")
         return "Direction3(" + std::to_string(d.dx()) + ", " +
                                std::to_string(d.dy()) + ", " +
                                std::to_string(d.dz()) + ")";
+    });
+
+
+// --- Line3 stub (full version comes later) ---
+py::class_<Line3>(m, "Line3")
+    .def("__repr__", [](const Line3&) {
+        return "Line3()";
+    });
+
+// --- Segment3 ---
+py::class_<Segment3>(m, "Segment3")
+    .def(py::init<const Point3&, const Point3&>(),
+         py::arg("p"), py::arg("q"))
+    .def("source",          &segment3_source)
+    .def("target",          &segment3_target)
+    .def("min",             &segment3_min)
+    .def("max",             &segment3_max)
+    .def("vertex",          &segment3_vertex,       py::arg("i"))
+    .def("point",           &segment3_point,        py::arg("i"))
+    .def("__getitem__",     &segment3_vertex,       py::arg("i"))
+    .def("squared_length",  &segment3_squared_length)
+    .def("to_vector",       &segment3_to_vector)
+    .def("direction",       &segment3_direction)
+    .def("opposite",        &segment3_opposite)
+    .def("supporting_line", &segment3_supporting_line)
+    .def("is_degenerate",   &segment3_is_degenerate)
+    .def("has_on",          &segment3_has_on,       py::arg("p"))
+    .def("bbox",            &segment3_bbox)
+    .def("__eq__",          &segment3_eq)
+    .def("__ne__",          &segment3_neq)
+    .def("__repr__", [](const Segment3& s) {
+        auto src = segment3_source(s);
+        auto tgt = segment3_target(s);
+        return "Segment3((" + std::to_string(src.x()) + ", " +
+                               std::to_string(src.y()) + ", " +
+                               std::to_string(src.z()) + "), (" +
+                               std::to_string(tgt.x()) + ", " +
+                               std::to_string(tgt.y()) + ", " +
+                               std::to_string(tgt.z()) + "))";
     });
 
 
