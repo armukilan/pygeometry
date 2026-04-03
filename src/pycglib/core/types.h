@@ -29,6 +29,7 @@ typedef Kernel::Ray_3 CGALRay3;
 typedef Kernel::Triangle_3 CGALTriangle3;
 typedef Kernel::Sphere_3 CGALSphere3;
 typedef Kernel::Tetrahedron_3 CGALTetrahedron3;
+typedef Kernel::Iso_cuboid_3 CGALIsoCuboid3;
 
 
 
@@ -477,4 +478,33 @@ struct Tetrahedron3 {
             CGALPoint3(p1.x(), p1.y(), p1.z()),
             CGALPoint3(p2.x(), p2.y(), p2.z()),
             CGALPoint3(p3.x(), p3.y(), p3.z())) {}
+};
+
+// ─── IsoCuboid3 ───────────────────────────────────────────
+struct IsoCuboid3 {
+    CGALIsoCuboid3 c;
+    IsoCuboid3(CGALIsoCuboid3 cuboid) : c(cuboid) {}
+    // From two diagonal opposite vertices
+    IsoCuboid3(const Point3& p, const Point3& q)
+        : c(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z())) {}
+    // From six vertices: left, right, bottom, top, far, close
+    IsoCuboid3(const Point3& left,  const Point3& right,
+               const Point3& bottom, const Point3& top,
+               const Point3& far,   const Point3& close)
+        : c(CGALPoint3(left.x(),   left.y(),   left.z()),
+            CGALPoint3(right.x(),  right.y(),  right.z()),
+            CGALPoint3(bottom.x(), bottom.y(), bottom.z()),
+            CGALPoint3(top.x(),    top.y(),    top.z()),
+            CGALPoint3(far.x(),    far.y(),    far.z()),
+            CGALPoint3(close.x(),  close.y(),  close.z())) {}
+    // From min/max coordinates
+    IsoCuboid3(double min_x, double min_y, double min_z,
+               double max_x, double max_y, double max_z)
+        : c(CGALPoint3(min_x, min_y, min_z),
+            CGALPoint3(max_x, max_y, max_z)) {}
+    // From Bbox3
+    IsoCuboid3(const Bbox3& bbox)
+        : c(CGALPoint3(bbox.xmin(), bbox.ymin(), bbox.zmin()),
+            CGALPoint3(bbox.xmax(), bbox.ymax(), bbox.zmax())) {}
 };

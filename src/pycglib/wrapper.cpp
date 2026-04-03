@@ -73,6 +73,7 @@
 #include "core/triangle3.h"
 #include "core/sphere3.h"
 #include "core/tetrahedron3.h"
+#include "core/iso_cuboid3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -999,6 +1000,50 @@ py::class_<Tetrahedron3>(m, "Tetrahedron3")
                                    std::to_string(p3.x()) + ", " +
                                    std::to_string(p3.y()) + ", " +
                                    std::to_string(p3.z()) + "))";
+    });
+
+
+
+// --- IsoCuboid3 ---
+py::class_<IsoCuboid3>(m, "IsoCuboid3")
+    .def(py::init<const Point3&, const Point3&>(),
+         py::arg("p"), py::arg("q"))
+    .def(py::init<const Point3&, const Point3&, const Point3&,
+                  const Point3&, const Point3&, const Point3&>(),
+         py::arg("left"), py::arg("right"), py::arg("bottom"),
+         py::arg("top"),  py::arg("far"),   py::arg("close"))
+    .def(py::init<double, double, double, double, double, double>(),
+         py::arg("min_x"), py::arg("min_y"), py::arg("min_z"),
+         py::arg("max_x"), py::arg("max_y"), py::arg("max_z"))
+    .def(py::init<const Bbox3&>(), py::arg("bbox"))
+    .def("vertex",                &iso_cuboid3_vertex,                py::arg("i"))
+    .def("__getitem__",           &iso_cuboid3_vertex,                py::arg("i"))
+    .def("min",                   &iso_cuboid3_min)
+    .def("max",                   &iso_cuboid3_max)
+    .def("xmin",                  &iso_cuboid3_xmin)
+    .def("ymin",                  &iso_cuboid3_ymin)
+    .def("zmin",                  &iso_cuboid3_zmin)
+    .def("xmax",                  &iso_cuboid3_xmax)
+    .def("ymax",                  &iso_cuboid3_ymax)
+    .def("zmax",                  &iso_cuboid3_zmax)
+    .def("min_coord",             &iso_cuboid3_min_coord,             py::arg("i"))
+    .def("max_coord",             &iso_cuboid3_max_coord,             py::arg("i"))
+    .def("is_degenerate",         &iso_cuboid3_is_degenerate)
+    .def("bounded_side",          &iso_cuboid3_bounded_side,          py::arg("p"))
+    .def("has_on_boundary",       &iso_cuboid3_has_on_boundary,       py::arg("p"))
+    .def("has_on_bounded_side",   &iso_cuboid3_has_on_bounded_side,   py::arg("p"))
+    .def("has_on_unbounded_side", &iso_cuboid3_has_on_unbounded_side, py::arg("p"))
+    .def("volume",                &iso_cuboid3_volume)
+    .def("bbox",                  &iso_cuboid3_bbox)
+    .def("__eq__",                &iso_cuboid3_eq)
+    .def("__ne__",                &iso_cuboid3_neq)
+    .def("__repr__", [](const IsoCuboid3& c) {
+        return "IsoCuboid3(xmin=" + std::to_string(iso_cuboid3_xmin(c)) +
+               ", ymin=" + std::to_string(iso_cuboid3_ymin(c)) +
+               ", zmin=" + std::to_string(iso_cuboid3_zmin(c)) +
+               ", xmax=" + std::to_string(iso_cuboid3_xmax(c)) +
+               ", ymax=" + std::to_string(iso_cuboid3_ymax(c)) +
+               ", zmax=" + std::to_string(iso_cuboid3_zmax(c)) + ")";
     });
 
 
