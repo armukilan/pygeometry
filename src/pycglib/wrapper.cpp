@@ -71,6 +71,7 @@
 #include "core/ray3.h"
 #include "core/plane3.h"
 #include "core/triangle3.h"
+#include "core/sphere3.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -918,6 +919,45 @@ py::class_<Triangle3>(m, "Triangle3")
                                 std::to_string(r.x()) + ", " +
                                 std::to_string(r.y()) + ", " +
                                 std::to_string(r.z()) + "))";
+    });
+
+
+
+// --- Sphere3 ---
+py::class_<Sphere3>(m, "Sphere3")
+    .def(py::init<const Point3&, double, int>(),
+         py::arg("center"), py::arg("squared_radius"), py::arg("orientation") = 1)
+    .def(py::init<const Point3&, const Point3&,
+                  const Point3&, const Point3&>(),
+         py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"))
+    .def(py::init<const Point3&, const Point3&, const Point3&, int>(),
+         py::arg("p"), py::arg("q"), py::arg("r"), py::arg("orientation") = 1)
+    .def(py::init<const Point3&, const Point3&, int>(),
+         py::arg("p"), py::arg("q"), py::arg("orientation") = 1)
+    .def(py::init<const Point3&, int>(),
+         py::arg("center"), py::arg("orientation") = 1)
+    .def("center",                &sphere3_center)
+    .def("squared_radius",        &sphere3_squared_radius)
+    .def("orientation",           &sphere3_orientation)
+    .def("is_degenerate",         &sphere3_is_degenerate)
+    .def("oriented_side",         &sphere3_oriented_side,         py::arg("p"))
+    .def("bounded_side",          &sphere3_bounded_side,          py::arg("p"))
+    .def("has_on_positive_side",  &sphere3_has_on_positive_side,  py::arg("p"))
+    .def("has_on_negative_side",  &sphere3_has_on_negative_side,  py::arg("p"))
+    .def("has_on_boundary",       &sphere3_has_on_boundary,       py::arg("p"))
+    .def("has_on_bounded_side",   &sphere3_has_on_bounded_side,   py::arg("p"))
+    .def("has_on_unbounded_side", &sphere3_has_on_unbounded_side, py::arg("p"))
+    .def("has_on",                &sphere3_has_on,                py::arg("p"))
+    .def("opposite",              &sphere3_opposite)
+    .def("bbox",                  &sphere3_bbox)
+    .def("__eq__",                &sphere3_eq)
+    .def("__ne__",                &sphere3_neq)
+    .def("__repr__", [](const Sphere3& s) {
+        auto c = sphere3_center(s);
+        return "Sphere3(center=(" + std::to_string(c.x()) + ", " +
+                                    std::to_string(c.y()) + ", " +
+                                    std::to_string(c.z()) + "), squared_radius=" +
+                                    std::to_string(sphere3_squared_radius(s)) + ")";
     });
 
 

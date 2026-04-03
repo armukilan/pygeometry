@@ -27,6 +27,7 @@ typedef Kernel::Line_3 CGALLine3;
 typedef Kernel::Plane_3 CGALPlane3;
 typedef Kernel::Ray_3 CGALRay3;
 typedef Kernel::Triangle_3 CGALTriangle3;
+typedef Kernel::Sphere_3 CGALSphere3;
 
 
 
@@ -427,5 +428,40 @@ struct Triangle3 {
         : t(CGALPoint3(p.x(), p.y(), p.z()),
             CGALPoint3(q.x(), q.y(), q.z()),
             CGALPoint3(r.x(), r.y(), r.z())) {}
+};
+
+
+// ─── Sphere3 ──────────────────────────────────────────────
+struct Sphere3 {
+    CGALSphere3 s;
+    Sphere3(CGALSphere3 sphere) : s(sphere) {}
+    // From center, squared_radius, orientation
+    Sphere3(const Point3& center, double squared_radius, int ori = 1)
+        : s(CGALPoint3(center.x(), center.y(), center.z()),
+            squared_radius,
+            ori >= 0 ? CGAL::COUNTERCLOCKWISE : CGAL::CLOCKWISE) {}
+    // From four points
+    Sphere3(const Point3& p, const Point3& q,
+            const Point3& r, const Point3& s_)
+        : s(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z()),
+            CGALPoint3(r.x(), r.y(), r.z()),
+            CGALPoint3(s_.x(), s_.y(), s_.z())) {}
+    // From three points, orientation
+    Sphere3(const Point3& p, const Point3& q,
+            const Point3& r, int ori = 1)
+        : s(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z()),
+            CGALPoint3(r.x(), r.y(), r.z()),
+            ori >= 0 ? CGAL::COUNTERCLOCKWISE : CGAL::CLOCKWISE) {}
+    // From two points, orientation
+    Sphere3(const Point3& p, const Point3& q, int ori = 1)
+        : s(CGALPoint3(p.x(), p.y(), p.z()),
+            CGALPoint3(q.x(), q.y(), q.z()),
+            ori >= 0 ? CGAL::COUNTERCLOCKWISE : CGAL::CLOCKWISE) {}
+    // From center only, orientation
+    Sphere3(const Point3& center, int ori = 1)
+        : s(CGALPoint3(center.x(), center.y(), center.z()),
+            ori >= 0 ? CGAL::COUNTERCLOCKWISE : CGAL::CLOCKWISE) {}
 };
 
