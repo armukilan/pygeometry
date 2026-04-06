@@ -77,6 +77,7 @@
 #include "core/circle3.h"
 #include "core/weighted_point3.h"
 #include "core/aff_transformation3.h"
+#include <CGAL/enum.h>
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -1184,5 +1185,48 @@ py::class_<AffTransformation3>(m, "AffTransformation3")
                ", m11=" + std::to_string(aff3_cartesian(t, 1, 1)) +
                ", m22=" + std::to_string(aff3_cartesian(t, 2, 2)) + ")";
     });
+
+
+// ============================================================
+// --- Constants and Enumerations ---
+// ============================================================
+
+// Angle
+m.attr("ACUTE")  = py::int_(1);
+m.attr("RIGHT")  = py::int_(0);
+m.attr("OBTUSE") = py::int_(-1);
+
+// Bounded_side
+m.attr("ON_BOUNDED_SIDE")   = py::int_(1);
+m.attr("ON_BOUNDARY")       = py::int_(0);
+m.attr("ON_UNBOUNDED_SIDE") = py::int_(-1);
+
+// Comparison_result
+m.attr("SMALLER") = py::int_(-1);
+m.attr("EQUAL")   = py::int_(0);
+m.attr("LARGER")  = py::int_(1);
+
+// Sign / Orientation
+m.attr("NEGATIVE")         = py::int_(-1);
+m.attr("ZERO")             = py::int_(0);
+m.attr("POSITIVE")         = py::int_(1);
+m.attr("CLOCKWISE")        = py::int_(-1);
+m.attr("COUNTERCLOCKWISE") = py::int_(1);
+m.attr("LEFT_TURN")        = py::int_(1);
+m.attr("RIGHT_TURN")       = py::int_(-1);
+m.attr("COLLINEAR")        = py::int_(0);
+m.attr("COPLANAR")         = py::int_(0);
+m.attr("DEGENERATE")       = py::int_(0);
+
+// Oriented_side
+m.attr("ON_NEGATIVE_SIDE")     = py::int_(-1);
+m.attr("ON_ORIENTED_BOUNDARY") = py::int_(0);
+m.attr("ON_POSITIVE_SIDE")     = py::int_(1);
+
+// Symbolic constants
+m.attr("ORIGIN")       = Point2(0.0, 0.0);
+m.attr("ORIGIN3")      = Point3(0.0, 0.0, 0.0);
+m.attr("NULL_VECTOR")  = Vector2(0.0, 0.0);
+m.attr("NULL_VECTOR3") = Vector3(0.0, 0.0, 0.0);
 
 }
