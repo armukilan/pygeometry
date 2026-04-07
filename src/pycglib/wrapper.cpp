@@ -1709,4 +1709,138 @@ m.def("compare_z", &compare_z_pt3,
       py::arg("p"), py::arg("q"),
       "Compare z-coordinates of two 3D points");
 
+// --- coplanar ---
+m.def("coplanar", &coplanar_4,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "True iff four 3D points are coplanar");
+
+// --- coplanar_orientation ---
+m.def("coplanar_orientation", &coplanar_orientation_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Orientation of three coplanar 3D points");
+m.def("coplanar_orientation", &coplanar_orientation_4,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Orientation of s relative to plane defined by p,q,r");
+
+// --- coplanar_side_of_bounded_circle ---
+m.def("coplanar_side_of_bounded_circle", &coplanar_side_of_bounded_circle,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Bounded side of circle through p,q,r on which s lies. Returns 1, 0, or -1");
+
+// --- cross_product ---
+m.def("cross_product", &cross_product,
+      py::arg("u"), py::arg("v"),
+      "Cross product of two 3D vectors");
+
+// --- determinant ---
+m.def("determinant", &determinant_2,
+      py::arg("v"), py::arg("w"),
+      "Determinant of two 2D vectors");
+m.def("determinant", &determinant_3,
+      py::arg("u"), py::arg("v"), py::arg("w"),
+      "Determinant of three 3D vectors");
+
+// --- do_intersect 2D ---
+m.def("do_intersect", &do_intersect_seg2_seg2,  py::arg("s1"), py::arg("s2"));
+m.def("do_intersect", &do_intersect_seg2_line2, py::arg("s"),  py::arg("l"));
+m.def("do_intersect", &do_intersect_seg2_ray2,  py::arg("s"),  py::arg("r"));
+m.def("do_intersect", &do_intersect_seg2_tri2,  py::arg("s"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_seg2_iso2,  py::arg("s"),  py::arg("r"));
+m.def("do_intersect", &do_intersect_line2_line2, py::arg("l1"), py::arg("l2"));
+m.def("do_intersect", &do_intersect_line2_ray2,  py::arg("l"),  py::arg("r"));
+m.def("do_intersect", &do_intersect_line2_tri2,  py::arg("l"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_ray2_ray2,  py::arg("r1"), py::arg("r2"));
+m.def("do_intersect", &do_intersect_ray2_tri2,  py::arg("r"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_tri2_tri2,  py::arg("t1"), py::arg("t2"));
+m.def("do_intersect", &do_intersect_iso2_iso2,  py::arg("r1"), py::arg("r2"));
+m.def("do_intersect", &do_intersect_pt2_iso2,   py::arg("p"),  py::arg("r"));
+m.def("do_intersect", &do_intersect_pt2_tri2,   py::arg("p"),  py::arg("t"));
+
+// --- do_intersect 3D ---
+m.def("do_intersect", &do_intersect_seg3_seg3,    py::arg("s1"), py::arg("s2"));
+m.def("do_intersect", &do_intersect_seg3_line3,   py::arg("s"),  py::arg("l"));
+m.def("do_intersect", &do_intersect_seg3_ray3,    py::arg("s"),  py::arg("r"));
+m.def("do_intersect", &do_intersect_seg3_plane3,  py::arg("s"),  py::arg("p"));
+m.def("do_intersect", &do_intersect_seg3_tri3,    py::arg("s"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_seg3_sphere3, py::arg("s"),  py::arg("sp"));
+m.def("do_intersect", &do_intersect_seg3_bbox3,   py::arg("s"),  py::arg("b"));
+m.def("do_intersect", &do_intersect_line3_line3,  py::arg("l1"), py::arg("l2"));
+m.def("do_intersect", &do_intersect_line3_ray3,   py::arg("l"),  py::arg("r"));
+m.def("do_intersect", &do_intersect_line3_plane3, py::arg("l"),  py::arg("p"));
+m.def("do_intersect", &do_intersect_line3_tri3,   py::arg("l"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_line3_sphere3,py::arg("l"),  py::arg("s"));
+m.def("do_intersect", &do_intersect_ray3_ray3,    py::arg("r1"), py::arg("r2"));
+m.def("do_intersect", &do_intersect_ray3_plane3,  py::arg("r"),  py::arg("p"));
+m.def("do_intersect", &do_intersect_ray3_tri3,    py::arg("r"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_ray3_sphere3, py::arg("r"),  py::arg("s"));
+m.def("do_intersect", &do_intersect_plane3_plane3, py::arg("p1"), py::arg("p2"));
+m.def("do_intersect", &do_intersect_plane3_sphere3,py::arg("p"),  py::arg("s"));
+m.def("do_intersect", &do_intersect_plane3_tri3,  py::arg("p"),  py::arg("t"));
+m.def("do_intersect", &do_intersect_tri3_tri3,    py::arg("t1"), py::arg("t2"));
+m.def("do_intersect", &do_intersect_sphere3_sphere3,py::arg("s1"),py::arg("s2"));
+m.def("do_intersect", &do_intersect_pt3_plane3,   py::arg("p"),  py::arg("pl"));
+m.def("do_intersect", &do_intersect_pt3_sphere3,  py::arg("p"),  py::arg("s"));
+m.def("do_intersect", &do_intersect_bbox3_bbox3,  py::arg("b1"), py::arg("b2"));
+m.def("do_intersect", &do_intersect_bbox3_seg3,   py::arg("b"),  py::arg("s"));
+m.def("do_intersect", &do_intersect_bbox3_tri3,   py::arg("b"),  py::arg("t"));
+
+// --- do_overlap ---
+m.def("do_overlap", &do_overlap_bbox2,
+      py::arg("b1"), py::arg("b2"), "True iff two 2D bboxes overlap");
+m.def("do_overlap", &do_overlap_bbox3,
+      py::arg("b1"), py::arg("b2"), "True iff two 3D bboxes overlap");
+
+// --- equidistant_line ---
+m.def("equidistant_line", &equidistant_line,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Line equidistant from three 3D points. Precondition: p,q,r not collinear");
+
+// --- has_larger_distance_to_point ---
+m.def("has_larger_distance_to_point", &has_larger_distance_to_point_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff distance(q,p) > distance(r,p) in 2D");
+m.def("has_larger_distance_to_point", &has_larger_distance_to_point_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff distance(q,p) > distance(r,p) in 3D");
+
+// --- has_larger_signed_distance_to_line ---
+m.def("has_larger_signed_distance_to_line", &has_larger_signed_distance_to_line_l,
+      py::arg("l"), py::arg("p"), py::arg("q"),
+      "True iff signed distance of p to l is larger than that of q");
+m.def("has_larger_signed_distance_to_line", &has_larger_signed_distance_to_line_p,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "True iff signed distance of r to line(p,q) is larger than that of s");
+
+// --- has_larger_signed_distance_to_plane ---
+m.def("has_larger_signed_distance_to_plane", &has_larger_signed_distance_to_plane_h,
+      py::arg("h"), py::arg("p"), py::arg("q"),
+      "True iff signed distance of p to plane h is larger than that of q");
+m.def("has_larger_signed_distance_to_plane", &has_larger_signed_distance_to_plane_p,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"), py::arg("t"),
+      "True iff signed distance of s to plane(p,q,r) is larger than that of t");
+
+// --- has_smaller_distance_to_point ---
+m.def("has_smaller_distance_to_point", &has_smaller_distance_to_point_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff distance(q,p) < distance(r,p) in 2D");
+m.def("has_smaller_distance_to_point", &has_smaller_distance_to_point_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff distance(q,p) < distance(r,p) in 3D");
+
+// --- has_smaller_signed_distance_to_line ---
+m.def("has_smaller_signed_distance_to_line", &has_smaller_signed_distance_to_line_l,
+      py::arg("l"), py::arg("p"), py::arg("q"),
+      "True iff signed distance of p to l is smaller than that of q");
+m.def("has_smaller_signed_distance_to_line", &has_smaller_signed_distance_to_line_p,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "True iff signed distance of r to line(p,q) is smaller than that of s");
+
+// --- has_smaller_signed_distance_to_plane ---
+m.def("has_smaller_signed_distance_to_plane", &has_smaller_signed_distance_to_plane_h,
+      py::arg("h"), py::arg("p"), py::arg("q"),
+      "True iff signed distance of p to plane h is smaller than that of q");
+m.def("has_smaller_signed_distance_to_plane", &has_smaller_signed_distance_to_plane_p,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"), py::arg("t"),
+      "True iff signed distance of s to plane(p,q,r) is smaller than that of t");
+
 }

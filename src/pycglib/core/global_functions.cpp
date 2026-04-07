@@ -565,3 +565,265 @@ int compare_yx_pt2(const Point2& p, const Point2& q) {
 int compare_z_pt3(const Point3& p, const Point3& q) {
     return cmp_to_int(CGAL::compare_z(toP3(p), toP3(q)));
 }
+
+#include <CGAL/intersections.h>
+
+// ============================================================
+// COPLANAR
+// ============================================================
+bool coplanar_4(const Point3& p, const Point3& q, const Point3& r, const Point3& s) {
+    return CGAL::coplanar(toP3(p), toP3(q), toP3(r), toP3(s));
+}
+
+// ============================================================
+// COPLANAR ORIENTATION
+// ============================================================
+int coplanar_orientation_3(const Point3& p, const Point3& q, const Point3& r) {
+    return cmp_to_int(CGAL::coplanar_orientation(toP3(p), toP3(q), toP3(r)));
+}
+
+int coplanar_orientation_4(const Point3& p, const Point3& q,
+                           const Point3& r, const Point3& s) {
+    return cmp_to_int(CGAL::coplanar_orientation(toP3(p), toP3(q), toP3(r), toP3(s)));
+}
+
+// ============================================================
+// COPLANAR SIDE OF BOUNDED CIRCLE
+// ============================================================
+int coplanar_side_of_bounded_circle(const Point3& p, const Point3& q,
+                                    const Point3& r, const Point3& s) {
+    auto side = CGAL::coplanar_side_of_bounded_circle(toP3(p), toP3(q), toP3(r), toP3(s));
+    if (side == CGAL::ON_BOUNDED_SIDE)   return 1;
+    if (side == CGAL::ON_UNBOUNDED_SIDE) return -1;
+    return 0;
+}
+
+// ============================================================
+// CROSS PRODUCT
+// ============================================================
+Vector3 cross_product(const Vector3& u, const Vector3& v) {
+    auto r = CGAL::cross_product(u.v, v.v);
+    return Vector3(CGAL::to_double(r.x()),
+                   CGAL::to_double(r.y()),
+                   CGAL::to_double(r.z()));
+}
+
+// ============================================================
+// DETERMINANT
+// ============================================================
+double determinant_2(const Vector2& v, const Vector2& w) {
+    return CGAL::to_double(CGAL::determinant(v.v, w.v));
+}
+
+double determinant_3(const Vector3& u, const Vector3& v, const Vector3& w) {
+    return CGAL::to_double(CGAL::determinant(u.v, v.v, w.v));
+}
+
+// ============================================================
+// DO INTERSECT 2D
+// ============================================================
+bool do_intersect_seg2_seg2(const Segment2& s1, const Segment2& s2) {
+    return CGAL::do_intersect(s1.s, s2.s);
+}
+bool do_intersect_seg2_line2(const Segment2& s, const Line2& l) {
+    return CGAL::do_intersect(s.s, l.l);
+}
+bool do_intersect_seg2_ray2(const Segment2& s, const Ray2& r) {
+    return CGAL::do_intersect(s.s, r.r);
+}
+bool do_intersect_seg2_tri2(const Segment2& s, const Triangle2& t) {
+    return CGAL::do_intersect(s.s, t.t);
+}
+bool do_intersect_seg2_iso2(const Segment2& s, const IsoRectangle2& r) {
+    return CGAL::do_intersect(s.s, r.r);
+}
+bool do_intersect_line2_line2(const Line2& l1, const Line2& l2) {
+    return CGAL::do_intersect(l1.l, l2.l);
+}
+bool do_intersect_line2_ray2(const Line2& l, const Ray2& r) {
+    return CGAL::do_intersect(l.l, r.r);
+}
+bool do_intersect_line2_tri2(const Line2& l, const Triangle2& t) {
+    return CGAL::do_intersect(l.l, t.t);
+}
+bool do_intersect_ray2_ray2(const Ray2& r1, const Ray2& r2) {
+    return CGAL::do_intersect(r1.r, r2.r);
+}
+bool do_intersect_ray2_tri2(const Ray2& r, const Triangle2& t) {
+    return CGAL::do_intersect(r.r, t.t);
+}
+bool do_intersect_tri2_tri2(const Triangle2& t1, const Triangle2& t2) {
+    return CGAL::do_intersect(t1.t, t2.t);
+}
+bool do_intersect_iso2_iso2(const IsoRectangle2& r1, const IsoRectangle2& r2) {
+    return CGAL::do_intersect(r1.r, r2.r);
+}
+bool do_intersect_pt2_iso2(const Point2& p, const IsoRectangle2& r) {
+    return CGAL::do_intersect(toP2(p), r.r);
+}
+bool do_intersect_pt2_tri2(const Point2& p, const Triangle2& t) {
+    return CGAL::do_intersect(toP2(p), t.t);
+}
+
+// ============================================================
+// DO INTERSECT 3D
+// ============================================================
+bool do_intersect_seg3_seg3(const Segment3& s1, const Segment3& s2) {
+    return CGAL::do_intersect(s1.s, s2.s);
+}
+bool do_intersect_seg3_line3(const Segment3& s, const Line3& l) {
+    return CGAL::do_intersect(s.s, l.l);
+}
+bool do_intersect_seg3_ray3(const Segment3& s, const Ray3& r) {
+    return CGAL::do_intersect(s.s, r.r);
+}
+bool do_intersect_seg3_plane3(const Segment3& s, const Plane3& p) {
+    return CGAL::do_intersect(s.s, p.p);
+}
+bool do_intersect_seg3_tri3(const Segment3& s, const Triangle3& t) {
+    return CGAL::do_intersect(s.s, t.t);
+}
+bool do_intersect_seg3_sphere3(const Segment3& s, const Sphere3& sp) {
+    return CGAL::do_intersect(s.s, sp.s);
+}
+bool do_intersect_seg3_bbox3(const Segment3& s, const Bbox3& b) {
+    return CGAL::do_intersect(s.s, b.b);
+}
+bool do_intersect_line3_line3(const Line3& l1, const Line3& l2) {
+    return CGAL::do_intersect(l1.l, l2.l);
+}
+bool do_intersect_line3_ray3(const Line3& l, const Ray3& r) {
+    return CGAL::do_intersect(l.l, r.r);
+}
+bool do_intersect_line3_plane3(const Line3& l, const Plane3& p) {
+    return CGAL::do_intersect(l.l, p.p);
+}
+bool do_intersect_line3_tri3(const Line3& l, const Triangle3& t) {
+    return CGAL::do_intersect(l.l, t.t);
+}
+bool do_intersect_line3_sphere3(const Line3& l, const Sphere3& s) {
+    return CGAL::do_intersect(l.l, s.s);
+}
+bool do_intersect_ray3_ray3(const Ray3& r1, const Ray3& r2) {
+    return CGAL::do_intersect(r1.r, r2.r);
+}
+bool do_intersect_ray3_plane3(const Ray3& r, const Plane3& p) {
+    return CGAL::do_intersect(r.r, p.p);
+}
+bool do_intersect_ray3_tri3(const Ray3& r, const Triangle3& t) {
+    return CGAL::do_intersect(r.r, t.t);
+}
+bool do_intersect_ray3_sphere3(const Ray3& r, const Sphere3& s) {
+    return CGAL::do_intersect(r.r, s.s);
+}
+bool do_intersect_plane3_plane3(const Plane3& p1, const Plane3& p2) {
+    return CGAL::do_intersect(p1.p, p2.p);
+}
+bool do_intersect_plane3_sphere3(const Plane3& p, const Sphere3& s) {
+    return CGAL::do_intersect(p.p, s.s);
+}
+bool do_intersect_plane3_tri3(const Plane3& p, const Triangle3& t) {
+    return CGAL::do_intersect(p.p, t.t);
+}
+bool do_intersect_tri3_tri3(const Triangle3& t1, const Triangle3& t2) {
+    return CGAL::do_intersect(t1.t, t2.t);
+}
+bool do_intersect_sphere3_sphere3(const Sphere3& s1, const Sphere3& s2) {
+    return CGAL::do_intersect(s1.s, s2.s);
+}
+bool do_intersect_pt3_plane3(const Point3& p, const Plane3& pl) {
+    return CGAL::do_intersect(toP3(p), pl.p);
+}
+bool do_intersect_pt3_sphere3(const Point3& p, const Sphere3& s) {
+    return CGAL::do_intersect(toP3(p), s.s);
+}
+bool do_intersect_bbox3_bbox3(const Bbox3& b1, const Bbox3& b2) {
+    return CGAL::do_intersect(b1.b, b2.b);
+}
+bool do_intersect_bbox3_seg3(const Bbox3& b, const Segment3& s) {
+    return CGAL::do_intersect(b.b, s.s);
+}
+bool do_intersect_bbox3_tri3(const Bbox3& b, const Triangle3& t) {
+    return CGAL::do_intersect(b.b, t.t);
+}
+
+// ============================================================
+// DO OVERLAP
+// ============================================================
+bool do_overlap_bbox2(const Bbox2& b1, const Bbox2& b2) {
+    return CGAL::do_overlap(b1.b, b2.b);
+}
+bool do_overlap_bbox3(const Bbox3& b1, const Bbox3& b2) {
+    return CGAL::do_overlap(b1.b, b2.b);
+}
+
+// ============================================================
+// EQUIDISTANT LINE
+// ============================================================
+Line3 equidistant_line(const Point3& p, const Point3& q, const Point3& r) {
+    return Line3(CGAL::equidistant_line(toP3(p), toP3(q), toP3(r)));
+}
+
+// ============================================================
+// HAS LARGER DISTANCE TO POINT
+// ============================================================
+bool has_larger_distance_to_point_2(const Point2& p, const Point2& q, const Point2& r) {
+    return CGAL::has_larger_distance_to_point(toP2(p), toP2(q), toP2(r));
+}
+bool has_larger_distance_to_point_3(const Point3& p, const Point3& q, const Point3& r) {
+    return CGAL::has_larger_distance_to_point(toP3(p), toP3(q), toP3(r));
+}
+
+// ============================================================
+// HAS LARGER SIGNED DISTANCE TO LINE
+// ============================================================
+bool has_larger_signed_distance_to_line_l(const Line2& l, const Point2& p, const Point2& q) {
+    return CGAL::has_larger_signed_distance_to_line(l.l, toP2(p), toP2(q));
+}
+bool has_larger_signed_distance_to_line_p(const Point2& p, const Point2& q,
+                                           const Point2& r, const Point2& s) {
+    return CGAL::has_larger_signed_distance_to_line(toP2(p), toP2(q), toP2(r), toP2(s));
+}
+
+// ============================================================
+// HAS LARGER SIGNED DISTANCE TO PLANE
+// ============================================================
+bool has_larger_signed_distance_to_plane_h(const Plane3& h, const Point3& p, const Point3& q) {
+    return CGAL::has_larger_signed_distance_to_plane(h.p, toP3(p), toP3(q));
+}
+bool has_larger_signed_distance_to_plane_p(const Point3& p, const Point3& q, const Point3& r,
+                                            const Point3& s, const Point3& t) {
+    return CGAL::has_larger_signed_distance_to_plane(toP3(p), toP3(q), toP3(r), toP3(s), toP3(t));
+}
+
+// ============================================================
+// HAS SMALLER DISTANCE TO POINT
+// ============================================================
+bool has_smaller_distance_to_point_2(const Point2& p, const Point2& q, const Point2& r) {
+    return CGAL::has_smaller_distance_to_point(toP2(p), toP2(q), toP2(r));
+}
+bool has_smaller_distance_to_point_3(const Point3& p, const Point3& q, const Point3& r) {
+    return CGAL::has_smaller_distance_to_point(toP3(p), toP3(q), toP3(r));
+}
+
+// ============================================================
+// HAS SMALLER SIGNED DISTANCE TO LINE
+// ============================================================
+bool has_smaller_signed_distance_to_line_l(const Line2& l, const Point2& p, const Point2& q) {
+    return CGAL::has_smaller_signed_distance_to_line(l.l, toP2(p), toP2(q));
+}
+bool has_smaller_signed_distance_to_line_p(const Point2& p, const Point2& q,
+                                            const Point2& r, const Point2& s) {
+    return CGAL::has_smaller_signed_distance_to_line(toP2(p), toP2(q), toP2(r), toP2(s));
+}
+
+// ============================================================
+// HAS SMALLER SIGNED DISTANCE TO PLANE
+// ============================================================
+bool has_smaller_signed_distance_to_plane_h(const Plane3& h, const Point3& p, const Point3& q) {
+    return CGAL::has_smaller_signed_distance_to_plane(h.p, toP3(p), toP3(q));
+}
+bool has_smaller_signed_distance_to_plane_p(const Point3& p, const Point3& q, const Point3& r,
+                                             const Point3& s, const Point3& t) {
+    return CGAL::has_smaller_signed_distance_to_plane(toP3(p), toP3(q), toP3(r), toP3(s), toP3(t));
+}
