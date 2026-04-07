@@ -397,3 +397,77 @@ bool has_smaller_signed_distance_to_line_p(const Point2& p, const Point2& q,
 bool has_smaller_signed_distance_to_plane_h(const Plane3& h, const Point3& p, const Point3& q);
 bool has_smaller_signed_distance_to_plane_p(const Point3& p, const Point3& q, const Point3& r,
                                              const Point3& s, const Point3& t);
+
+
+// ============================================================
+// INTERSECTION 2D — returns py::dict with "type" and "value"
+// ============================================================
+#include <pybind11/pybind11.h>
+namespace py = pybind11;
+
+py::dict intersection_seg2_seg2(const Segment2& s1, const Segment2& s2);
+py::dict intersection_seg2_line2(const Segment2& s, const Line2& l);
+py::dict intersection_seg2_ray2(const Segment2& s, const Ray2& r);
+py::dict intersection_seg2_tri2(const Segment2& s, const Triangle2& t);
+py::dict intersection_line2_line2(const Line2& l1, const Line2& l2);
+py::dict intersection_line2_ray2(const Line2& l, const Ray2& r);
+py::dict intersection_line2_seg2(const Line2& l, const Segment2& s);
+py::dict intersection_ray2_ray2(const Ray2& r1, const Ray2& r2);
+py::dict intersection_ray2_seg2(const Ray2& r, const Segment2& s);
+
+// ============================================================
+// INTERSECTION 3D
+// ============================================================
+py::dict intersection_seg3_seg3(const Segment3& s1, const Segment3& s2);
+py::dict intersection_seg3_line3(const Segment3& s, const Line3& l);
+py::dict intersection_seg3_plane3(const Segment3& s, const Plane3& p);
+py::dict intersection_seg3_tri3(const Segment3& s, const Triangle3& t);
+py::dict intersection_line3_line3(const Line3& l1, const Line3& l2);
+py::dict intersection_line3_plane3(const Line3& l, const Plane3& p);
+py::dict intersection_line3_tri3(const Line3& l, const Triangle3& t);
+py::dict intersection_plane3_plane3(const Plane3& p1, const Plane3& p2);
+py::dict intersection_plane3_plane3_plane3(const Plane3& p1, const Plane3& p2, const Plane3& p3);
+py::dict intersection_plane3_seg3(const Plane3& p, const Segment3& s);
+py::dict intersection_plane3_tri3(const Plane3& p, const Triangle3& t);
+
+// ============================================================
+// L INFINITY DISTANCE
+// ============================================================
+double l_infinity_distance_2(const Point2& p, const Point2& q);
+double l_infinity_distance_3(const Point3& p, const Point3& q);
+
+// ============================================================
+// LEFT TURN
+// ============================================================
+bool left_turn_2(const Point2& p, const Point2& q, const Point2& r);
+
+// ============================================================
+// LEXICOGRAPHIC COMPARISONS
+// ============================================================
+bool lexicographically_xyz_smaller(const Point3& p, const Point3& q);
+bool lexicographically_xyz_smaller_or_equal(const Point3& p, const Point3& q);
+bool lexicographically_xy_larger(const Point2& p, const Point2& q);
+bool lexicographically_xy_larger_or_equal(const Point2& p, const Point2& q);
+bool lexicographically_xy_smaller(const Point2& p, const Point2& q);
+bool lexicographically_xy_smaller_or_equal(const Point2& p, const Point2& q);
+
+// ============================================================
+// MAX / MIN VERTEX
+// ============================================================
+Point2 max_vertex_iso_rect(const IsoRectangle2& ir);
+Point3 max_vertex_iso_cuboid(const IsoCuboid3& ic);
+Point2 min_vertex_iso_rect(const IsoRectangle2& ir);
+Point3 min_vertex_iso_cuboid(const IsoCuboid3& ic);
+
+// ============================================================
+// MIDPOINT
+// ============================================================
+Point2 midpoint_pt2(const Point2& p, const Point2& q);
+Point2 midpoint_seg2(const Segment2& s);
+Point3 midpoint_pt3(const Point3& p, const Point3& q);
+Point3 midpoint_seg3(const Segment3& s);
+
+// ============================================================
+// NORMAL
+// ============================================================
+Vector3 normal_3(const Point3& p, const Point3& q, const Point3& r);

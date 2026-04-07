@@ -79,6 +79,7 @@
 #include "core/aff_transformation3.h"
 #include <CGAL/enum.h>
 #include "core/global_functions.h"
+#include <pybind11/stl.h>
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -1842,5 +1843,96 @@ m.def("has_smaller_signed_distance_to_plane", &has_smaller_signed_distance_to_pl
 m.def("has_smaller_signed_distance_to_plane", &has_smaller_signed_distance_to_plane_p,
       py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"), py::arg("t"),
       "True iff signed distance of s to plane(p,q,r) is smaller than that of t");
+
+
+
+// --- intersection 2D ---
+m.def("intersection", &intersection_seg2_seg2,
+      py::arg("s1"), py::arg("s2"),
+      "Intersection of two 2D segments. Returns dict with 'type' and 'value'");
+m.def("intersection", &intersection_seg2_line2,
+      py::arg("s"), py::arg("l"));
+m.def("intersection", &intersection_seg2_ray2,
+      py::arg("s"), py::arg("r"));
+m.def("intersection", &intersection_seg2_tri2,
+      py::arg("s"), py::arg("t"));
+m.def("intersection", &intersection_line2_line2,
+      py::arg("l1"), py::arg("l2"));
+m.def("intersection", &intersection_line2_ray2,
+      py::arg("l"), py::arg("r"));
+m.def("intersection", &intersection_line2_seg2,
+      py::arg("l"), py::arg("s"));
+m.def("intersection", &intersection_ray2_ray2,
+      py::arg("r1"), py::arg("r2"));
+m.def("intersection", &intersection_ray2_seg2,
+      py::arg("r"), py::arg("s"));
+
+// --- intersection 3D ---
+m.def("intersection", &intersection_seg3_seg3,
+      py::arg("s1"), py::arg("s2"));
+m.def("intersection", &intersection_seg3_line3,
+      py::arg("s"), py::arg("l"));
+m.def("intersection", &intersection_seg3_plane3,
+      py::arg("s"), py::arg("p"));
+m.def("intersection", &intersection_seg3_tri3,
+      py::arg("s"), py::arg("t"));
+m.def("intersection", &intersection_line3_line3,
+      py::arg("l1"), py::arg("l2"));
+m.def("intersection", &intersection_line3_plane3,
+      py::arg("l"), py::arg("p"));
+m.def("intersection", &intersection_line3_tri3,
+      py::arg("l"), py::arg("t"));
+m.def("intersection", &intersection_plane3_plane3,
+      py::arg("p1"), py::arg("p2"));
+m.def("intersection", &intersection_plane3_plane3_plane3,
+      py::arg("p1"), py::arg("p2"), py::arg("p3"));
+m.def("intersection", &intersection_plane3_seg3,
+      py::arg("p"), py::arg("s"));
+m.def("intersection", &intersection_plane3_tri3,
+      py::arg("p"), py::arg("t"));
+
+// --- l_infinity_distance ---
+m.def("l_infinity_distance", &l_infinity_distance_2,
+      py::arg("p"), py::arg("q"),
+      "L-infinity distance between two 2D points");
+m.def("l_infinity_distance", &l_infinity_distance_3,
+      py::arg("p"), py::arg("q"),
+      "L-infinity distance between two 3D points");
+
+// --- left_turn ---
+m.def("left_turn", &left_turn_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff p, q, r form a left turn");
+
+// --- lexicographic comparisons ---
+m.def("lexicographically_xyz_smaller", &lexicographically_xyz_smaller,
+      py::arg("p"), py::arg("q"));
+m.def("lexicographically_xyz_smaller_or_equal", &lexicographically_xyz_smaller_or_equal,
+      py::arg("p"), py::arg("q"));
+m.def("lexicographically_xy_larger", &lexicographically_xy_larger,
+      py::arg("p"), py::arg("q"));
+m.def("lexicographically_xy_larger_or_equal", &lexicographically_xy_larger_or_equal,
+      py::arg("p"), py::arg("q"));
+m.def("lexicographically_xy_smaller", &lexicographically_xy_smaller,
+      py::arg("p"), py::arg("q"));
+m.def("lexicographically_xy_smaller_or_equal", &lexicographically_xy_smaller_or_equal,
+      py::arg("p"), py::arg("q"));
+
+// --- max_vertex / min_vertex ---
+m.def("max_vertex", &max_vertex_iso_rect,   py::arg("ir"));
+m.def("max_vertex", &max_vertex_iso_cuboid, py::arg("ic"));
+m.def("min_vertex", &min_vertex_iso_rect,   py::arg("ir"));
+m.def("min_vertex", &min_vertex_iso_cuboid, py::arg("ic"));
+
+// --- midpoint ---
+m.def("midpoint", &midpoint_pt2,  py::arg("p"), py::arg("q"));
+m.def("midpoint", &midpoint_seg2, py::arg("s"));
+m.def("midpoint", &midpoint_pt3,  py::arg("p"), py::arg("q"));
+m.def("midpoint", &midpoint_seg3, py::arg("s"));
+
+// --- normal ---
+m.def("normal", &normal_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Normal vector for vectors q-p and r-p");
 
 }

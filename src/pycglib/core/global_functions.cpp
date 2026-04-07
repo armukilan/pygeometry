@@ -827,3 +827,712 @@ bool has_smaller_signed_distance_to_plane_p(const Point3& p, const Point3& q, co
                                              const Point3& s, const Point3& t) {
     return CGAL::has_smaller_signed_distance_to_plane(toP3(p), toP3(q), toP3(r), toP3(s), toP3(t));
 }
+
+#include <CGAL/intersections.h>
+// Helper to disambiguate boost::variant get from boost::tuples::get on MSVC
+// template<typename T, typename Variant>
+// const T* variant_get(const Variant& v) {
+//     return boost::get<T>(&v);
+// }
+// Helper to disambiguate std::variant get on MSVC
+template<typename T, typename Variant>
+const T* variant_get(const Variant& v) {
+    return std::get_if<T>(&v);
+}
+
+// Helper to make empty result
+static py::dict none_result() {
+    py::dict d;
+    d["type"]  = py::str("none");
+    d["value"] = py::none();
+    return d;
+}
+
+// ============================================================
+// INTERSECTION 2D
+// ============================================================
+// py::dict intersection_seg2_seg2(const Segment2& s1, const Segment2& s2) {
+//     auto result = CGAL::intersection(s1.s, s2.s);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* s = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*s);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_seg2_line2(const Segment2& s, const Line2& l) {
+//     auto result = CGAL::intersection(s.s, l.l);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* seg = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*seg);
+//     }
+//     return d;
+// }
+
+py::dict intersection_seg2_seg2(const Segment2& s1, const Segment2& s2) {
+    auto result = CGAL::intersection(s1.s, s2.s);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* s = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*s);
+    }
+    return d;
+}
+
+py::dict intersection_seg2_line2(const Segment2& s, const Line2& l) {
+    auto result = CGAL::intersection(s.s, l.l);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    }
+    return d;
+}
+
+// py::dict intersection_seg2_ray2(const Segment2& s, const Ray2& r) {
+//     auto result = CGAL::intersection(s.s, r.r);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* seg = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_seg2_tri2(const Segment2& s, const Triangle2& t) {
+//     auto result = CGAL::intersection(s.s, t.t);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* seg = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_line2_line2(const Line2& l1, const Line2& l2) {
+//     auto result = CGAL::intersection(l1.l, l2.l);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALLine2* l = boost::get<CGALLine2>(&*result)) {
+//         d["type"]  = py::str("Line2");
+//         d["value"] = Line2(*l);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_line2_ray2(const Line2& l, const Ray2& r) {
+//     auto result = CGAL::intersection(l.l, r.r);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const Kernel::Ray_2* ray = boost::get<Kernel::Ray_2>(&*result)) {
+//         d["type"]  = py::str("Ray2");
+//         d["value"] = Ray2(*ray);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_line2_seg2(const Line2& l, const Segment2& s) {
+//     auto result = CGAL::intersection(l.l, s.s);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* seg = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_ray2_ray2(const Ray2& r1, const Ray2& r2) {
+//     auto result = CGAL::intersection(r1.r, r2.r);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* seg = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*seg);
+//     } else if (const Kernel::Ray_2* ray = boost::get<Kernel::Ray_2>(&*result)) {
+//         d["type"]  = py::str("Ray2");
+//         d["value"] = Ray2(*ray);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_ray2_seg2(const Ray2& r, const Segment2& s) {
+//     auto result = CGAL::intersection(r.r, s.s);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint2* p = boost::get<CGALPoint2>(&*result)) {
+//         d["type"]  = py::str("Point2");
+//         d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+//     } else if (const CGALSegment2* seg = boost::get<CGALSegment2>(&*result)) {
+//         d["type"]  = py::str("Segment2");
+//         d["value"] = Segment2(*seg);
+//     }
+//     return d;
+// }
+
+// // ============================================================
+// // INTERSECTION 3D
+// // ============================================================
+// py::dict intersection_seg3_seg3(const Segment3& s1, const Segment3& s2) {
+//     auto result = CGAL::intersection(s1.s, s2.s);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* p = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*p);
+//     } else if (const CGALSegment3* s = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*s);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_seg3_line3(const Segment3& s, const Line3& l) {
+//     auto result = CGAL::intersection(s.s, l.l);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* p = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*p);
+//     } else if (const CGALSegment3* seg = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_seg3_plane3(const Segment3& s, const Plane3& p) {
+//     auto result = CGAL::intersection(s.s, p.p);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* pt = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*pt);
+//     } else if (const CGALSegment3* seg = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_seg3_tri3(const Segment3& s, const Triangle3& t) {
+//     auto result = CGAL::intersection(s.s, t.t);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* p = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*p);
+//     } else if (const CGALSegment3* seg = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_line3_line3(const Line3& l1, const Line3& l2) {
+//     auto result = CGAL::intersection(l1.l, l2.l);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* p = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*p);
+//     } else if (const CGALLine3* l = boost::get<CGALLine3>(&*result)) {
+//         d["type"]  = py::str("Line3");
+//         d["value"] = Line3(*l);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_line3_plane3(const Line3& l, const Plane3& p) {
+//     auto result = CGAL::intersection(l.l, p.p);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* pt = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*pt);
+//     } else if (const CGALLine3* ln = boost::get<CGALLine3>(&*result)) {
+//         d["type"]  = py::str("Line3");
+//         d["value"] = Line3(*ln);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_line3_tri3(const Line3& l, const Triangle3& t) {
+//     auto result = CGAL::intersection(l.l, t.t);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* p = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*p);
+//     } else if (const CGALSegment3* seg = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_plane3_plane3(const Plane3& p1, const Plane3& p2) {
+//     auto result = CGAL::intersection(p1.p, p2.p);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALLine3* l = boost::get<CGALLine3>(&*result)) {
+//         d["type"]  = py::str("Line3");
+//         d["value"] = Line3(*l);
+//     } else if (const CGALPlane3* pl = boost::get<CGALPlane3>(&*result)) {
+//         d["type"]  = py::str("Plane3");
+//         d["value"] = Plane3(*pl);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_plane3_plane3_plane3(const Plane3& p1, const Plane3& p2, const Plane3& p3) {
+//     auto result = CGAL::intersection(p1.p, p2.p, p3.p);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* p = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*p);
+//     } else if (const CGALLine3* l = boost::get<CGALLine3>(&*result)) {
+//         d["type"]  = py::str("Line3");
+//         d["value"] = Line3(*l);
+//     } else if (const CGALPlane3* pl = boost::get<CGALPlane3>(&*result)) {
+//         d["type"]  = py::str("Plane3");
+//         d["value"] = Plane3(*pl);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_plane3_seg3(const Plane3& p, const Segment3& s) {
+//     auto result = CGAL::intersection(p.p, s.s);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* pt = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*pt);
+//     } else if (const CGALSegment3* seg = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*seg);
+//     }
+//     return d;
+// }
+
+// py::dict intersection_plane3_tri3(const Plane3& p, const Triangle3& t) {
+//     auto result = CGAL::intersection(p.p, t.t);
+//     if (!result) return none_result();
+//     py::dict d;
+//     if (const CGALPoint3* pt = boost::get<CGALPoint3>(&*result)) {
+//         d["type"]  = py::str("Point3");
+//         d["value"] = fromP3(*pt);
+//     } else if (const CGALSegment3* seg = boost::get<CGALSegment3>(&*result)) {
+//         d["type"]  = py::str("Segment3");
+//         d["value"] = Segment3(*seg);
+//     } else if (const CGALTriangle3* tri = boost::get<CGALTriangle3>(&*result)) {
+//         d["type"]  = py::str("Triangle3");
+//         d["value"] = Triangle3(*tri);
+//     }
+//     return d;
+// }
+
+py::dict intersection_seg2_ray2(const Segment2& s, const Ray2& r) {
+    auto result = CGAL::intersection(s.s, r.r);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_seg2_tri2(const Segment2& s, const Triangle2& t) {
+    auto result = CGAL::intersection(s.s, t.t);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_line2_line2(const Line2& l1, const Line2& l2) {
+    auto result = CGAL::intersection(l1.l, l2.l);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALLine2* l = variant_get<CGALLine2>(var)) {
+        d["type"]  = py::str("Line2");
+        d["value"] = Line2(*l);
+    }
+    return d;
+}
+
+py::dict intersection_line2_ray2(const Line2& l, const Ray2& r) {
+    auto result = CGAL::intersection(l.l, r.r);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const Kernel::Ray_2* ray = variant_get<Kernel::Ray_2>(var)) {
+        d["type"]  = py::str("Ray2");
+        d["value"] = Ray2(*ray);
+    }
+    return d;
+}
+
+py::dict intersection_line2_seg2(const Line2& l, const Segment2& s) {
+    auto result = CGAL::intersection(l.l, s.s);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_ray2_ray2(const Ray2& r1, const Ray2& r2) {
+    auto result = CGAL::intersection(r1.r, r2.r);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    } else if (const Kernel::Ray_2* ray = variant_get<Kernel::Ray_2>(var)) {
+        d["type"]  = py::str("Ray2");
+        d["value"] = Ray2(*ray);
+    }
+    return d;
+}
+
+py::dict intersection_ray2_seg2(const Ray2& r, const Segment2& s) {
+    auto result = CGAL::intersection(r.r, s.s);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    }
+    return d;
+}
+
+// ============================================================
+// INTERSECTION 3D
+// ============================================================
+py::dict intersection_seg3_seg3(const Segment3& s1, const Segment3& s2) {
+    auto result = CGAL::intersection(s1.s, s2.s);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* p = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*p);
+    } else if (const CGALSegment3* s = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*s);
+    }
+    return d;
+}
+
+py::dict intersection_seg3_line3(const Segment3& s, const Line3& l) {
+    auto result = CGAL::intersection(s.s, l.l);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* p = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*p);
+    } else if (const CGALSegment3* seg = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_seg3_plane3(const Segment3& s, const Plane3& p) {
+    auto result = CGAL::intersection(s.s, p.p);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* pt = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*pt);
+    } else if (const CGALSegment3* seg = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_seg3_tri3(const Segment3& s, const Triangle3& t) {
+    auto result = CGAL::intersection(s.s, t.t);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* p = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*p);
+    } else if (const CGALSegment3* seg = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_line3_line3(const Line3& l1, const Line3& l2) {
+    auto result = CGAL::intersection(l1.l, l2.l);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* p = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*p);
+    } else if (const CGALLine3* l = variant_get<CGALLine3>(var)) {
+        d["type"]  = py::str("Line3");
+        d["value"] = Line3(*l);
+    }
+    return d;
+}
+
+py::dict intersection_line3_plane3(const Line3& l, const Plane3& p) {
+    auto result = CGAL::intersection(l.l, p.p);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* pt = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*pt);
+    } else if (const CGALLine3* ln = variant_get<CGALLine3>(var)) {
+        d["type"]  = py::str("Line3");
+        d["value"] = Line3(*ln);
+    }
+    return d;
+}
+
+py::dict intersection_line3_tri3(const Line3& l, const Triangle3& t) {
+    auto result = CGAL::intersection(l.l, t.t);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* p = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*p);
+    } else if (const CGALSegment3* seg = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_plane3_plane3(const Plane3& p1, const Plane3& p2) {
+    auto result = CGAL::intersection(p1.p, p2.p);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALLine3* l = variant_get<CGALLine3>(var)) {
+        d["type"]  = py::str("Line3");
+        d["value"] = Line3(*l);
+    } else if (const CGALPlane3* pl = variant_get<CGALPlane3>(var)) {
+        d["type"]  = py::str("Plane3");
+        d["value"] = Plane3(*pl);
+    }
+    return d;
+}
+
+py::dict intersection_plane3_plane3_plane3(const Plane3& p1, const Plane3& p2, const Plane3& p3) {
+    auto result = CGAL::intersection(p1.p, p2.p, p3.p);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* p = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*p);
+    } else if (const CGALLine3* l = variant_get<CGALLine3>(var)) {
+        d["type"]  = py::str("Line3");
+        d["value"] = Line3(*l);
+    } else if (const CGALPlane3* pl = variant_get<CGALPlane3>(var)) {
+        d["type"]  = py::str("Plane3");
+        d["value"] = Plane3(*pl);
+    }
+    return d;
+}
+
+py::dict intersection_plane3_seg3(const Plane3& p, const Segment3& s) {
+    auto result = CGAL::intersection(p.p, s.s);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* pt = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*pt);
+    } else if (const CGALSegment3* seg = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*seg);
+    }
+    return d;
+}
+
+py::dict intersection_plane3_tri3(const Plane3& p, const Triangle3& t) {
+    auto result = CGAL::intersection(p.p, t.t);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint3* pt = variant_get<CGALPoint3>(var)) {
+        d["type"]  = py::str("Point3");
+        d["value"] = fromP3(*pt);
+    } else if (const CGALSegment3* seg = variant_get<CGALSegment3>(var)) {
+        d["type"]  = py::str("Segment3");
+        d["value"] = Segment3(*seg);
+    } else if (const CGALTriangle3* tri = variant_get<CGALTriangle3>(var)) {
+        d["type"]  = py::str("Triangle3");
+        d["value"] = Triangle3(*tri);
+    }
+    return d;
+}
+
+// ============================================================
+// L INFINITY DISTANCE
+// ============================================================
+double l_infinity_distance_2(const Point2& p, const Point2& q) {
+    return CGAL::to_double(CGAL::l_infinity_distance(toP2(p), toP2(q)));
+}
+
+double l_infinity_distance_3(const Point3& p, const Point3& q) {
+    return CGAL::to_double(CGAL::l_infinity_distance(toP3(p), toP3(q)));
+}
+
+// ============================================================
+// LEFT TURN
+// ============================================================
+bool left_turn_2(const Point2& p, const Point2& q, const Point2& r) {
+    return CGAL::left_turn(toP2(p), toP2(q), toP2(r));
+}
+
+// ============================================================
+// LEXICOGRAPHIC COMPARISONS
+// ============================================================
+bool lexicographically_xyz_smaller(const Point3& p, const Point3& q) {
+    return CGAL::lexicographically_xyz_smaller(toP3(p), toP3(q));
+}
+bool lexicographically_xyz_smaller_or_equal(const Point3& p, const Point3& q) {
+    return CGAL::lexicographically_xyz_smaller_or_equal(toP3(p), toP3(q));
+}
+bool lexicographically_xy_larger(const Point2& p, const Point2& q) {
+    return CGAL::lexicographically_xy_larger(toP2(p), toP2(q));
+}
+bool lexicographically_xy_larger_or_equal(const Point2& p, const Point2& q) {
+    return CGAL::lexicographically_xy_larger_or_equal(toP2(p), toP2(q));
+}
+bool lexicographically_xy_smaller(const Point2& p, const Point2& q) {
+    return CGAL::lexicographically_xy_smaller(toP2(p), toP2(q));
+}
+bool lexicographically_xy_smaller_or_equal(const Point2& p, const Point2& q) {
+    return CGAL::lexicographically_xy_smaller_or_equal(toP2(p), toP2(q));
+}
+
+// ============================================================
+// MAX / MIN VERTEX
+// ============================================================
+Point2 max_vertex_iso_rect(const IsoRectangle2& ir) {
+    return fromP2(CGAL::max_vertex(ir.r));
+}
+Point3 max_vertex_iso_cuboid(const IsoCuboid3& ic) {
+    return fromP3(CGAL::max_vertex(ic.c));
+}
+Point2 min_vertex_iso_rect(const IsoRectangle2& ir) {
+    return fromP2(CGAL::min_vertex(ir.r));
+}
+Point3 min_vertex_iso_cuboid(const IsoCuboid3& ic) {
+    return fromP3(CGAL::min_vertex(ic.c));
+}
+
+// ============================================================
+// MIDPOINT
+// ============================================================
+Point2 midpoint_pt2(const Point2& p, const Point2& q) {
+    return fromP2(CGAL::midpoint(toP2(p), toP2(q)));
+}
+Point2 midpoint_seg2(const Segment2& s) {
+    return fromP2(CGAL::midpoint(s.s));
+}
+Point3 midpoint_pt3(const Point3& p, const Point3& q) {
+    return fromP3(CGAL::midpoint(toP3(p), toP3(q)));
+}
+Point3 midpoint_seg3(const Segment3& s) {
+    return fromP3(CGAL::midpoint(s.s));
+}
+
+// ============================================================
+// NORMAL
+// ============================================================
+Vector3 normal_3(const Point3& p, const Point3& q, const Point3& r) {
+    auto v = CGAL::normal(toP3(p), toP3(q), toP3(r));
+    return Vector3(CGAL::to_double(v.x()),
+                   CGAL::to_double(v.y()),
+                   CGAL::to_double(v.z()));
+}
