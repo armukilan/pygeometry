@@ -835,6 +835,7 @@ bool has_smaller_signed_distance_to_plane_p(const Point3& p, const Point3& q, co
 //     return boost::get<T>(&v);
 // }
 // Helper to disambiguate std::variant get on MSVC
+# include<variant>
 template<typename T, typename Variant>
 const T* variant_get(const Variant& v) {
     return std::get_if<T>(&v);
@@ -879,35 +880,7 @@ static py::dict none_result() {
 //     return d;
 // }
 
-py::dict intersection_seg2_seg2(const Segment2& s1, const Segment2& s2) {
-    auto result = CGAL::intersection(s1.s, s2.s);
-    if (!result) return none_result();
-    py::dict d;
-    const auto& var = *result;
-    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
-        d["type"]  = py::str("Point2");
-        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
-    } else if (const CGALSegment2* s = variant_get<CGALSegment2>(var)) {
-        d["type"]  = py::str("Segment2");
-        d["value"] = Segment2(*s);
-    }
-    return d;
-}
 
-py::dict intersection_seg2_line2(const Segment2& s, const Line2& l) {
-    auto result = CGAL::intersection(s.s, l.l);
-    if (!result) return none_result();
-    py::dict d;
-    const auto& var = *result;
-    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
-        d["type"]  = py::str("Point2");
-        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
-    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
-        d["type"]  = py::str("Segment2");
-        d["value"] = Segment2(*seg);
-    }
-    return d;
-}
 
 // py::dict intersection_seg2_ray2(const Segment2& s, const Ray2& r) {
 //     auto result = CGAL::intersection(s.s, r.r);
@@ -1172,6 +1145,36 @@ py::dict intersection_seg2_line2(const Segment2& s, const Line2& l) {
 //     }
 //     return d;
 // }
+
+py::dict intersection_seg2_seg2(const Segment2& s1, const Segment2& s2) {
+    auto result = CGAL::intersection(s1.s, s2.s);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* s = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*s);
+    }
+    return d;
+}
+
+py::dict intersection_seg2_line2(const Segment2& s, const Line2& l) {
+    auto result = CGAL::intersection(s.s, l.l);
+    if (!result) return none_result();
+    py::dict d;
+    const auto& var = *result;
+    if (const CGALPoint2* p = variant_get<CGALPoint2>(var)) {
+        d["type"]  = py::str("Point2");
+        d["value"] = Point2(CGAL::to_double(p->x()), CGAL::to_double(p->y()));
+    } else if (const CGALSegment2* seg = variant_get<CGALSegment2>(var)) {
+        d["type"]  = py::str("Segment2");
+        d["value"] = Segment2(*seg);
+    }
+    return d;
+}
 
 py::dict intersection_seg2_ray2(const Segment2& s, const Ray2& r) {
     auto result = CGAL::intersection(s.s, r.r);
