@@ -835,10 +835,24 @@ bool has_smaller_signed_distance_to_plane_p(const Point3& p, const Point3& q, co
 //     return boost::get<T>(&v);
 // }
 // Helper to disambiguate std::variant get on MSVC
-# include<variant>
-template<typename T, typename Variant>
-const T* variant_get(const Variant& v) {
+// # include<variant>
+// template<typename T, typename Variant>
+// const T* variant_get(const Variant& v) {
+//     return std::get_if<T>(&v);
+// }
+#include <variant>
+#include <boost/variant.hpp>
+
+// Dispatch for std::variant (Windows/macOS CGAL)
+template<typename T, typename... Types>
+const T* variant_get(const std::variant<Types...>& v) {
     return std::get_if<T>(&v);
+}
+
+// Dispatch for boost::variant (Linux CGAL)
+template<typename T, typename... Types>
+const T* variant_get(const boost::variant<Types...>& v) {
+    return boost::get<T>(&v);
 }
 
 // Helper to make empty result
