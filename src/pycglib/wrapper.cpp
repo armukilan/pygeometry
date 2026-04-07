@@ -1381,4 +1381,123 @@ m.def("are_strictly_ordered_along_line", &are_strictly_ordered_along_line_2,
 m.def("are_strictly_ordered_along_line", &are_strictly_ordered_along_line_3,
       py::arg("p"), py::arg("q"), py::arg("r"),
       "True iff 3D points are collinear and q lies strictly between p and r");
+
+
+// --- area ---
+m.def("area", &area_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Signed area of triangle defined by 2D points p, q, r");
+
+// --- barycenter 2D ---
+m.def("barycenter", &barycenter_2_2,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"),
+      "Barycenter of p1,p2 with weights w1 and 1-w1");
+m.def("barycenter", &barycenter_2_22,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      "Barycenter of p1,p2 with weights w1,w2");
+m.def("barycenter", &barycenter_2_3,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"), py::arg("p3"),
+      "Barycenter of p1,p2,p3 with weights w1,w2 and 1-w1-w2");
+m.def("barycenter", &barycenter_2_33,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      py::arg("p3"), py::arg("w3"),
+      "Barycenter of p1,p2,p3 with weights w1,w2,w3");
+m.def("barycenter", &barycenter_2_4,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      py::arg("p3"), py::arg("w3"), py::arg("p4"),
+      "Barycenter of p1,p2,p3,p4 with weights w1,w2,w3 and 1-w1-w2-w3");
+m.def("barycenter", &barycenter_2_44,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      py::arg("p3"), py::arg("w3"), py::arg("p4"), py::arg("w4"),
+      "Barycenter of p1,p2,p3,p4 with weights w1,w2,w3,w4");
+
+// --- barycenter 3D ---
+m.def("barycenter", &barycenter_3_2,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"),
+      "3D barycenter of p1,p2 with weights w1 and 1-w1");
+m.def("barycenter", &barycenter_3_22,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      "3D barycenter of p1,p2 with weights w1,w2");
+m.def("barycenter", &barycenter_3_3,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"), py::arg("p3"),
+      "3D barycenter of p1,p2,p3 with weights w1,w2 and 1-w1-w2");
+m.def("barycenter", &barycenter_3_33,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      py::arg("p3"), py::arg("w3"),
+      "3D barycenter of p1,p2,p3 with weights w1,w2,w3");
+m.def("barycenter", &barycenter_3_4,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      py::arg("p3"), py::arg("w3"), py::arg("p4"),
+      "3D barycenter of p1,p2,p3,p4 with weights w1,w2,w3 and 1-w1-w2-w3");
+m.def("barycenter", &barycenter_3_44,
+      py::arg("p1"), py::arg("w1"), py::arg("p2"), py::arg("w2"),
+      py::arg("p3"), py::arg("w3"), py::arg("p4"), py::arg("w4"),
+      "3D barycenter of p1,p2,p3,p4 with weights w1,w2,w3,w4");
+
+// --- bisector ---
+m.def("bisector", &bisector_pt2,
+      py::arg("p"), py::arg("q"),
+      "Bisector line of two 2D points");
+m.def("bisector", &bisector_ln2,
+      py::arg("l1"), py::arg("l2"),
+      "Bisector line of two 2D lines");
+m.def("bisector", &bisector_pt3,
+      py::arg("p"), py::arg("q"),
+      "Bisector plane of two 3D points");
+m.def("bisector", &bisector_pl3,
+      py::arg("h1"), py::arg("h2"),
+      "Bisector plane of two planes");
+
+// --- centroid 2D ---
+m.def("centroid", &centroid_2_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Centroid of three 2D points");
+m.def("centroid", &centroid_2_4,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Centroid of four 2D points");
+m.def("centroid", &centroid_2_tri,
+      py::arg("t"),
+      "Centroid of a 2D triangle");
+
+// --- centroid 3D ---
+m.def("centroid", &centroid_3_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Centroid of three 3D points");
+m.def("centroid", &centroid_3_4,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Centroid of four 3D points");
+m.def("centroid", &centroid_3_tri,
+      py::arg("t"),
+      "Centroid of a 3D triangle");
+m.def("centroid", &centroid_3_tet,
+      py::arg("t"),
+      "Centroid of a tetrahedron");
+
+// --- circumcenter 2D ---
+m.def("circumcenter", &circumcenter_2_2,
+      py::arg("p"), py::arg("q"),
+      "Center of smallest circle through two 2D points");
+m.def("circumcenter", &circumcenter_2_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Circumcenter of three 2D points");
+m.def("circumcenter", &circumcenter_2_tri,
+      py::arg("t"),
+      "Circumcenter of a 2D triangle");
+
+// --- circumcenter 3D ---
+m.def("circumcenter", &circumcenter_3_2,
+      py::arg("p"), py::arg("q"),
+      "Center of smallest sphere through two 3D points");
+m.def("circumcenter", &circumcenter_3_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Circumcenter of three 3D points");
+m.def("circumcenter", &circumcenter_3_4,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Circumcenter of four 3D points");
+m.def("circumcenter", &circumcenter_3_tri,
+      py::arg("t"),
+      "Circumcenter of a 3D triangle");
+m.def("circumcenter", &circumcenter_3_tet,
+      py::arg("t"),
+      "Circumcenter of a tetrahedron");
 }
