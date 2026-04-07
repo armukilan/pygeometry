@@ -78,6 +78,7 @@
 #include "core/weighted_point3.h"
 #include "core/aff_transformation3.h"
 #include <CGAL/enum.h>
+#include "core/global_functions.h"
 
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
@@ -1187,6 +1188,91 @@ py::class_<AffTransformation3>(m, "AffTransformation3")
     });
 
 
+// // ============================================================
+// // --- Constants and Enumerations ---
+// // ============================================================
+
+// // --- Angle ---
+// py::enum_<CGAL::Angle>(m, "Angle")
+//     .value("OBTUSE", CGAL::OBTUSE)
+//     .value("RIGHT",  CGAL::RIGHT)
+//     .value("ACUTE",  CGAL::ACUTE)
+//     .export_values();
+
+// // --- Bounded_side ---
+// py::enum_<CGAL::Bounded_side>(m, "BoundedSide")
+//     .value("ON_UNBOUNDED_SIDE", CGAL::ON_UNBOUNDED_SIDE)
+//     .value("ON_BOUNDARY",       CGAL::ON_BOUNDARY)
+//     .value("ON_BOUNDED_SIDE",   CGAL::ON_BOUNDED_SIDE)
+//     .export_values();
+
+// // --- Comparison_result ---
+// py::enum_<CGAL::Comparison_result>(m, "ComparisonResult")
+//     .value("SMALLER", CGAL::SMALLER)
+//     .value("EQUAL",   CGAL::EQUAL)
+//     .value("LARGER",  CGAL::LARGER)
+//     .export_values();
+
+// // --- Sign ---
+// // py::enum_<CGAL::Sign>(m, "CGALSign")
+// //     .value("NEGATIVE", CGAL::NEGATIVE)
+// //     .value("ZERO",     CGAL::ZERO)
+// //     .value("POSITIVE", CGAL::POSITIVE)
+// //     .export_values();
+
+// // --- Orientation (typedef of Sign) ---
+// // py::enum_<CGAL::Orientation>(m, "Orientation")
+// //     .value("CLOCKWISE",        CGAL::CLOCKWISE)
+// //     .value("COUNTERCLOCKWISE", CGAL::COUNTERCLOCKWISE)
+// //     .value("COLLINEAR",        CGAL::COLLINEAR)
+// //     .value("COPLANAR",         CGAL::COPLANAR)
+// //     .value("DEGENERATE",       CGAL::DEGENERATE)
+// //     .export_values();
+
+// // Orientation / Sign constants as plain ints
+// m.attr("NEGATIVE")         = py::int_(-1);
+// m.attr("ZERO")             = py::int_(0);
+// m.attr("POSITIVE")         = py::int_(1);
+// m.attr("CLOCKWISE")        = py::int_(-1);
+// m.attr("COUNTERCLOCKWISE") = py::int_(1);
+// m.attr("LEFT_TURN")        = py::int_(1);
+// m.attr("RIGHT_TURN")       = py::int_(-1);
+// m.attr("COLLINEAR")        = py::int_(0);
+// m.attr("COPLANAR")         = py::int_(0);
+// m.attr("DEGENERATE")       = py::int_(0);
+
+// // --- Oriented_side ---
+// py::enum_<CGAL::Oriented_side>(m, "OrientedSide")
+//     .value("ON_NEGATIVE_SIDE",     CGAL::ON_NEGATIVE_SIDE)
+//     .value("ON_ORIENTED_BOUNDARY", CGAL::ON_ORIENTED_BOUNDARY)
+//     .value("ON_POSITIVE_SIDE",     CGAL::ON_POSITIVE_SIDE)
+//     .export_values();
+
+// // --- Orientation aliases as module constants ---
+// m.attr("LEFT_TURN")        = py::cast(CGAL::LEFT_TURN);
+// m.attr("RIGHT_TURN")       = py::cast(CGAL::RIGHT_TURN);
+// m.attr("CLOCKWISE")        = py::cast(CGAL::CLOCKWISE);
+// m.attr("COUNTERCLOCKWISE") = py::cast(CGAL::COUNTERCLOCKWISE);
+// m.attr("COLLINEAR")        = py::cast(CGAL::COLLINEAR);
+// m.attr("COPLANAR")         = py::cast(CGAL::COPLANAR);
+// m.attr("DEGENERATE")       = py::cast(CGAL::DEGENERATE);
+
+// // --- Symbolic constants ---
+// m.attr("ORIGIN")       = Point2(0.0, 0.0);
+// m.attr("ORIGIN3")      = Point3(0.0, 0.0, 0.0);
+// m.attr("NULL_VECTOR")  = Vector2(0.0, 0.0);
+// m.attr("NULL_VECTOR3") = Vector3(0.0, 0.0, 0.0);
+
+// // --- opposite() for Oriented_side and Bounded_side ---
+// m.def("opposite", [](CGAL::Oriented_side o) {
+//     return CGAL::opposite(o);
+// }, py::arg("o"), "Returns the opposite oriented side");
+
+// m.def("opposite", [](CGAL::Bounded_side o) {
+//     return CGAL::opposite(o);
+// }, py::arg("o"), "Returns the opposite bounded side");
+
+
 // ============================================================
 // --- Constants and Enumerations ---
 // ============================================================
@@ -1229,4 +1315,70 @@ m.attr("ORIGIN3")      = Point3(0.0, 0.0, 0.0);
 m.attr("NULL_VECTOR")  = Vector2(0.0, 0.0);
 m.attr("NULL_VECTOR3") = Vector3(0.0, 0.0, 0.0);
 
+
+// ============================================================
+// --- Global Functions ---
+// ============================================================
+
+// --- angle ---
+// Returns: 1=ACUTE, 0=RIGHT, -1=OBTUSE
+m.def("angle", &angle_vec2_vec2,
+      py::arg("u"), py::arg("v"),
+      "Angle between two 2D vectors. Returns 1=ACUTE, 0=RIGHT, -1=OBTUSE");
+
+m.def("angle", &angle_pt2_pt2_pt2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Angle at vertex q formed by 2D points p,q,r");
+
+m.def("angle", &angle_pt2_pt2_pt2_pt2,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Angle between 2D vectors pq and rs");
+
+m.def("angle", &angle_vec3_vec3,
+      py::arg("u"), py::arg("v"),
+      "Angle between two 3D vectors");
+
+m.def("angle", &angle_pt3_pt3_pt3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Angle at vertex q formed by 3D points p,q,r");
+
+m.def("angle", &angle_pt3_pt3_pt3_pt3,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Angle between 3D vectors pq and rs");
+
+m.def("angle", &angle_pt3_pt3_pt3_vec3,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("v"),
+      "Angle between normal of triangle pqr and vector v");
+
+// --- approximate_angle ---
+m.def("approximate_angle", &approximate_angle_pt3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Approximation of angle between p-q and r-q in degrees");
+
+m.def("approximate_angle", &approximate_angle_vec3,
+      py::arg("u"), py::arg("v"),
+      "Approximation of angle between vectors u and v in degrees");
+
+// --- approximate_dihedral_angle ---
+m.def("approximate_dihedral_angle", &approximate_dihedral_angle,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Approximation of signed dihedral angle in tetrahedron pqrs of edge pq in degrees");
+
+// --- are_ordered_along_line ---
+m.def("are_ordered_along_line", &are_ordered_along_line_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff 2D points are collinear and q is between p and r (inclusive)");
+
+m.def("are_ordered_along_line", &are_ordered_along_line_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff 3D points are collinear and q is between p and r (inclusive)");
+
+// --- are_strictly_ordered_along_line ---
+m.def("are_strictly_ordered_along_line", &are_strictly_ordered_along_line_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff 2D points are collinear and q lies strictly between p and r");
+
+m.def("are_strictly_ordered_along_line", &are_strictly_ordered_along_line_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff 3D points are collinear and q lies strictly between p and r");
 }
