@@ -341,3 +341,115 @@ int compare_signed_distance_to_line_p(const Point2& p, const Point2& q,
     return cmp_to_int(CGAL::compare_signed_distance_to_line(
         toP2(p), toP2(q), toP2(r), toP2(s)));
 }
+
+// ============================================================
+// COLLINEAR ARE STRICTLY ORDERED ALONG LINE
+// ============================================================
+bool collinear_are_strictly_ordered_along_line_2(const Point2& p, const Point2& q, const Point2& r) {
+    return CGAL::collinear_are_strictly_ordered_along_line(toP2(p), toP2(q), toP2(r));
+}
+
+bool collinear_are_strictly_ordered_along_line_3(const Point3& p, const Point3& q, const Point3& r) {
+    return CGAL::collinear_are_strictly_ordered_along_line(toP3(p), toP3(q), toP3(r));
+}
+
+// ============================================================
+// COMPARE SIGNED DISTANCE TO PLANE
+// ============================================================
+int compare_signed_distance_to_plane_h(const Plane3& h, const Point3& p, const Point3& q) {
+    return cmp_to_int(CGAL::compare_signed_distance_to_plane(h.p, toP3(p), toP3(q)));
+}
+
+int compare_signed_distance_to_plane_p(const Point3& p, const Point3& q, const Point3& r,
+                                       const Point3& s, const Point3& t) {
+    return cmp_to_int(CGAL::compare_signed_distance_to_plane(
+        toP3(p), toP3(q), toP3(r), toP3(s), toP3(t)));
+}
+
+// ============================================================
+// COMPARE SLOPE
+// ============================================================
+int compare_slope_line(const Line2& l1, const Line2& l2) {
+    return cmp_to_int(CGAL::compare_slope(l1.l, l2.l));
+}
+
+int compare_slope_seg(const Segment2& s1, const Segment2& s2) {
+    return cmp_to_int(CGAL::compare_slope(s1.s, s2.s));
+}
+
+int compare_slope_pt2(const Point2& s1s, const Point2& s1t,
+                      const Point2& s2s, const Point2& s2t) {
+    return cmp_to_int(CGAL::compare_slope(toP2(s1s), toP2(s1t), toP2(s2s), toP2(s2t)));
+}
+
+int compare_slope_pt3(const Point3& p, const Point3& q,
+                      const Point3& r, const Point3& s) {
+    return cmp_to_int(CGAL::compare_slope(toP3(p), toP3(q), toP3(r), toP3(s)));
+}
+
+// ============================================================
+// COMPARE ANGLE
+// ============================================================
+int compare_angle(const Point3& a, const Point3& b, const Point3& c, double cosine) {
+    return cmp_to_int(CGAL::compare_angle(toP3(a), toP3(b), toP3(c), cosine));
+}
+
+// ============================================================
+// COMPARE DIHEDRAL ANGLE
+// ============================================================
+int compare_dihedral_angle_pt(const Point3& a1, const Point3& b1,
+                               const Point3& c1, const Point3& d1,
+                               const Point3& a2, const Point3& b2,
+                               const Point3& c2, const Point3& d2) {
+    return cmp_to_int(CGAL::compare_dihedral_angle(
+        toP3(a1), toP3(b1), toP3(c1), toP3(d1),
+        toP3(a2), toP3(b2), toP3(c2), toP3(d2)));
+}
+
+int compare_dihedral_angle_pt_cos(const Point3& a1, const Point3& b1,
+                                  const Point3& c1, const Point3& d1,
+                                  double cosine) {
+    return cmp_to_int(CGAL::compare_dihedral_angle(
+        toP3(a1), toP3(b1), toP3(c1), toP3(d1), cosine));
+}
+
+int compare_dihedral_angle_vec(const Vector3& u1, const Vector3& v1, const Vector3& w1,
+                                const Vector3& u2, const Vector3& v2, const Vector3& w2) {
+    return cmp_to_int(CGAL::compare_dihedral_angle(u1.v, v1.v, w1.v, u2.v, v2.v, w2.v));
+}
+
+int compare_dihedral_angle_vec_cos(const Vector3& u1, const Vector3& v1,
+                                   const Vector3& w1, double cosine) {
+    return cmp_to_int(CGAL::compare_dihedral_angle(u1.v, v1.v, w1.v, cosine));
+}
+
+// ============================================================
+// COMPARE SQUARED DISTANCE
+// ============================================================
+int compare_squared_distance_2(const Point2& p, const Point2& q, double d2) {
+    return cmp_to_int(CGAL::compare_squared_distance(toP2(p), toP2(q), d2));
+}
+
+int compare_squared_distance_3(const Point3& p, const Point3& q, double d2) {
+    return cmp_to_int(CGAL::compare_squared_distance(toP3(p), toP3(q), d2));
+}
+
+// ============================================================
+// COMPARE SQUARED RADIUS
+// ============================================================
+int compare_squared_radius_1(const Point3& p, double sr) {
+    return cmp_to_int(CGAL::compare_squared_radius(toP3(p), sr));
+}
+
+int compare_squared_radius_2(const Point3& p, const Point3& q, double sr) {
+    return cmp_to_int(CGAL::compare_squared_radius(toP3(p), toP3(q), sr));
+}
+
+int compare_squared_radius_3(const Point3& p, const Point3& q, const Point3& r, double sr) {
+    return cmp_to_int(CGAL::compare_squared_radius(toP3(p), toP3(q), toP3(r), sr));
+}
+
+int compare_squared_radius_4(const Point3& p, const Point3& q,
+                              const Point3& r, const Point3& s, double sr) {
+    return cmp_to_int(CGAL::compare_squared_radius(toP3(p), toP3(q), toP3(r), toP3(s), sr));
+}

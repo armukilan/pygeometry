@@ -148,3 +148,62 @@ int compare_lexicographically_3(const Point3& p, const Point3& q);
 int compare_signed_distance_to_line_l(const Line2& l, const Point2& p, const Point2& q);
 int compare_signed_distance_to_line_p(const Point2& p, const Point2& q,
                                       const Point2& r, const Point2& s);
+
+
+// ============================================================
+// COLLINEAR ARE STRICTLY ORDERED ALONG LINE
+// ============================================================
+bool collinear_are_strictly_ordered_along_line_2(const Point2& p, const Point2& q, const Point2& r);
+bool collinear_are_strictly_ordered_along_line_3(const Point3& p, const Point3& q, const Point3& r);
+
+// ============================================================
+// COMPARE SIGNED DISTANCE TO PLANE
+// ============================================================
+int compare_signed_distance_to_plane_h(const Plane3& h, const Point3& p, const Point3& q);
+int compare_signed_distance_to_plane_p(const Point3& p, const Point3& q, const Point3& r,
+                                       const Point3& s, const Point3& t);
+
+// ============================================================
+// COMPARE SLOPE
+// ============================================================
+int compare_slope_line(const Line2& l1, const Line2& l2);
+int compare_slope_seg(const Segment2& s1, const Segment2& s2);
+int compare_slope_pt2(const Point2& s1s, const Point2& s1t,
+                      const Point2& s2s, const Point2& s2t);
+int compare_slope_pt3(const Point3& p, const Point3& q,
+                      const Point3& r, const Point3& s);
+
+// ============================================================
+// COMPARE ANGLE
+// ============================================================
+int compare_angle(const Point3& a, const Point3& b, const Point3& c, double cosine);
+
+// ============================================================
+// COMPARE DIHEDRAL ANGLE
+// ============================================================
+int compare_dihedral_angle_pt(const Point3& a1, const Point3& b1,
+                               const Point3& c1, const Point3& d1,
+                               const Point3& a2, const Point3& b2,
+                               const Point3& c2, const Point3& d2);
+int compare_dihedral_angle_pt_cos(const Point3& a1, const Point3& b1,
+                                  const Point3& c1, const Point3& d1,
+                                  double cosine);
+int compare_dihedral_angle_vec(const Vector3& u1, const Vector3& v1, const Vector3& w1,
+                                const Vector3& u2, const Vector3& v2, const Vector3& w2);
+int compare_dihedral_angle_vec_cos(const Vector3& u1, const Vector3& v1,
+                                   const Vector3& w1, double cosine);
+
+// ============================================================
+// COMPARE SQUARED DISTANCE
+// ============================================================
+int compare_squared_distance_2(const Point2& p, const Point2& q, double d2);
+int compare_squared_distance_3(const Point3& p, const Point3& q, double d2);
+
+// ============================================================
+// COMPARE SQUARED RADIUS
+// ============================================================
+int compare_squared_radius_1(const Point3& p, double sr);
+int compare_squared_radius_2(const Point3& p, const Point3& q, double sr);
+int compare_squared_radius_3(const Point3& p, const Point3& q, const Point3& r, double sr);
+int compare_squared_radius_4(const Point3& p, const Point3& q,
+                              const Point3& r, const Point3& s, double sr);

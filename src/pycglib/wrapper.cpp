@@ -1542,4 +1542,79 @@ m.def("compare_signed_distance_to_line", &compare_signed_distance_to_line_l,
 m.def("compare_signed_distance_to_line", &compare_signed_distance_to_line_p,
       py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
       "Compare signed distances of r and s to line through p and q");
+
+// --- collinear_are_strictly_ordered_along_line ---
+m.def("collinear_are_strictly_ordered_along_line",
+      &collinear_are_strictly_ordered_along_line_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff q lies strictly between p and r. Precondition: p,q,r collinear");
+m.def("collinear_are_strictly_ordered_along_line",
+      &collinear_are_strictly_ordered_along_line_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff q lies strictly between p and r. Precondition: p,q,r collinear");
+
+// --- compare_signed_distance_to_plane ---
+m.def("compare_signed_distance_to_plane", &compare_signed_distance_to_plane_h,
+      py::arg("h"), py::arg("p"), py::arg("q"),
+      "Compare signed distances of p and q to plane h. Returns -1, 0, or 1");
+m.def("compare_signed_distance_to_plane", &compare_signed_distance_to_plane_p,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"), py::arg("t"),
+      "Compare signed distances of s and t to plane through p,q,r");
+
+// --- compare_slope ---
+m.def("compare_slope", &compare_slope_line,
+      py::arg("l1"), py::arg("l2"),
+      "Compare slopes of two 2D lines. Returns -1, 0, or 1");
+m.def("compare_slope", &compare_slope_seg,
+      py::arg("s1"), py::arg("s2"),
+      "Compare slopes of two 2D segments");
+m.def("compare_slope", &compare_slope_pt2,
+      py::arg("s1s"), py::arg("s1t"), py::arg("s2s"), py::arg("s2t"),
+      "Compare slopes of segments (s1s,s1t) and (s2s,s2t)");
+m.def("compare_slope", &compare_slope_pt3,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Compare slopes of 3D segments (p,q) and (r,s)");
+
+// --- compare_angle ---
+m.def("compare_angle", &compare_angle,
+      py::arg("a"), py::arg("b"), py::arg("c"), py::arg("cosine"),
+      "Compare angle at b in triangle (a,b,c) to angle with given cosine");
+
+// --- compare_dihedral_angle ---
+m.def("compare_dihedral_angle", &compare_dihedral_angle_pt,
+      py::arg("a1"), py::arg("b1"), py::arg("c1"), py::arg("d1"),
+      py::arg("a2"), py::arg("b2"), py::arg("c2"), py::arg("d2"),
+      "Compare dihedral angles of two tetrahedra at their respective edges");
+m.def("compare_dihedral_angle", &compare_dihedral_angle_pt_cos,
+      py::arg("a1"), py::arg("b1"), py::arg("c1"), py::arg("d1"), py::arg("cosine"),
+      "Compare dihedral angle of tetrahedron to angle with given cosine");
+m.def("compare_dihedral_angle", &compare_dihedral_angle_vec,
+      py::arg("u1"), py::arg("v1"), py::arg("w1"),
+      py::arg("u2"), py::arg("v2"), py::arg("w2"),
+      "Compare dihedral angles between vectorial planes");
+m.def("compare_dihedral_angle", &compare_dihedral_angle_vec_cos,
+      py::arg("u1"), py::arg("v1"), py::arg("w1"), py::arg("cosine"),
+      "Compare dihedral angle between vectorial planes to angle with given cosine");
+
+// --- compare_squared_distance ---
+m.def("compare_squared_distance", &compare_squared_distance_2,
+      py::arg("p"), py::arg("q"), py::arg("d2"),
+      "Compare squared distance of 2D points p,q to d2. Returns -1, 0, or 1");
+m.def("compare_squared_distance", &compare_squared_distance_3,
+      py::arg("p"), py::arg("q"), py::arg("d2"),
+      "Compare squared distance of 3D points p,q to d2");
+
+// --- compare_squared_radius ---
+m.def("compare_squared_radius", &compare_squared_radius_1,
+      py::arg("p"), py::arg("sr"),
+      "Compare squared radius of sphere of radius 0 at p to sr");
+m.def("compare_squared_radius", &compare_squared_radius_2,
+      py::arg("p"), py::arg("q"), py::arg("sr"),
+      "Compare squared radius of sphere through p,q to sr");
+m.def("compare_squared_radius", &compare_squared_radius_3,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("sr"),
+      "Compare squared radius of sphere through p,q,r to sr");
+m.def("compare_squared_radius", &compare_squared_radius_4,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"), py::arg("sr"),
+      "Compare squared radius of sphere through p,q,r,s to sr");
 }
