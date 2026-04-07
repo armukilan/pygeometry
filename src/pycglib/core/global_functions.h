@@ -117,3 +117,34 @@ Point3 circumcenter_3_4(const Point3& p, const Point3& q,
                         const Point3& r, const Point3& s);
 Point3 circumcenter_3_tri(const Triangle3& t);
 Point3 circumcenter_3_tet(const Tetrahedron3& t);
+
+// ============================================================
+// COLLINEAR
+// ============================================================
+bool collinear_2(const Point2& p, const Point2& q, const Point2& r);
+bool collinear_3(const Point3& p, const Point3& q, const Point3& r);
+
+// ============================================================
+// COLLINEAR ARE ORDERED ALONG LINE
+// ============================================================
+bool collinear_are_ordered_along_line_2(const Point2& p, const Point2& q, const Point2& r);
+bool collinear_are_ordered_along_line_3(const Point3& p, const Point3& q, const Point3& r);
+
+// ============================================================
+// COMPARE DISTANCE TO POINT
+// ============================================================
+int compare_distance_to_point_2(const Point2& p, const Point2& q, const Point2& r);
+int compare_distance_to_point_3(const Point3& p, const Point3& q, const Point3& r);
+
+// ============================================================
+// COMPARE LEXICOGRAPHICALLY
+// ============================================================
+int compare_lexicographically_2(const Point2& p, const Point2& q);
+int compare_lexicographically_3(const Point3& p, const Point3& q);
+
+// ============================================================
+// COMPARE SIGNED DISTANCE TO LINE
+// ============================================================
+int compare_signed_distance_to_line_l(const Line2& l, const Point2& p, const Point2& q);
+int compare_signed_distance_to_line_p(const Point2& p, const Point2& q,
+                                      const Point2& r, const Point2& s);

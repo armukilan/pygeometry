@@ -1500,4 +1500,46 @@ m.def("circumcenter", &circumcenter_3_tri,
 m.def("circumcenter", &circumcenter_3_tet,
       py::arg("t"),
       "Circumcenter of a tetrahedron");
+
+// --- collinear ---
+m.def("collinear", &collinear_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff three 2D points are collinear");
+m.def("collinear", &collinear_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff three 3D points are collinear");
+
+// --- collinear_are_ordered_along_line ---
+m.def("collinear_are_ordered_along_line", &collinear_are_ordered_along_line_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff q lies between p and r. Precondition: p,q,r are collinear");
+m.def("collinear_are_ordered_along_line", &collinear_are_ordered_along_line_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "True iff q lies between p and r. Precondition: p,q,r are collinear");
+
+// --- compare_distance_to_point ---
+// Returns: -1=SMALLER(q closer), 1=LARGER(r closer), 0=EQUAL
+m.def("compare_distance_to_point", &compare_distance_to_point_2,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Compare distances of q and r to p. Returns -1=q closer, 1=r closer, 0=equal");
+m.def("compare_distance_to_point", &compare_distance_to_point_3,
+      py::arg("p"), py::arg("q"), py::arg("r"),
+      "Compare distances of q and r to p. Returns -1=q closer, 1=r closer, 0=equal");
+
+// --- compare_lexicographically ---
+// Returns: -1=SMALLER, 0=EQUAL, 1=LARGER
+m.def("compare_lexicographically", &compare_lexicographically_2,
+      py::arg("p"), py::arg("q"),
+      "Compare 2D points lexicographically in xy order. Returns -1, 0, or 1");
+m.def("compare_lexicographically", &compare_lexicographically_3,
+      py::arg("p"), py::arg("q"),
+      "Compare 3D points lexicographically in xyz order. Returns -1, 0, or 1");
+
+// --- compare_signed_distance_to_line ---
+m.def("compare_signed_distance_to_line", &compare_signed_distance_to_line_l,
+      py::arg("l"), py::arg("p"), py::arg("q"),
+      "Compare signed distances of p and q to line l. Returns -1, 0, or 1");
+m.def("compare_signed_distance_to_line", &compare_signed_distance_to_line_p,
+      py::arg("p"), py::arg("q"), py::arg("r"), py::arg("s"),
+      "Compare signed distances of r and s to line through p and q");
 }
