@@ -46,13 +46,14 @@ jobs:
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
 
           # Install CGAL inside Linux container
-          # CIBW_BEFORE_ALL_LINUX: |
-          #   dnf install -y epel-release
-          #   dnf install -y CGAL-devel boost-devel gmp-devel mpfr-devel
           CIBW_BEFORE_ALL_LINUX: |
             dnf install -y epel-release
-            dnf install -y boost-devel gmp-devel mpfr-devel
-            curl -L https://github.com/CGAL/cgal/releases/download/v6.1.1/CGAL-6.1.1-library.tar.xz | tar -xJ -C /usr/local --strip-components=1
+            dnf install -y CGAL-devel boost-devel gmp-devel mpfr-devel
+            rpm -q CGAL-devel
+          # CIBW_BEFORE_ALL_LINUX: |
+          #   dnf install -y epel-release
+          #   dnf install -y boost-devel gmp-devel mpfr-devel
+          #   curl -L https://github.com/CGAL/cgal/releases/download/v6.1.1/CGAL-6.1.1-library.tar.xz | tar -xJ -C /usr/local --strip-components=1
 
           # Set Windows environment so cmake can find CGAL
           # Uses CMAKE_PREFIX_PATH instead of CGAL_DIR for more reliable detection
