@@ -241,8 +241,10 @@ void bind_polygon_with_holes2(py::module_& m) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Multipolygon_with_holes_2
 // A collection of PolygonWithHoles2 objects (e.g. disconnected regions).
+// Only available on CGAL >= 5.6. On older systems this is a no-op.
 // ─────────────────────────────────────────────────────────────────────────────
 void bind_multipolygon_with_holes2(py::module_& m) {
+#ifdef PYCG_HAS_MULTIPOLYGON
     py::class_<CGALMultipolygon2>(m, "MultipolygonWithHoles2")
         .def(py::init<>(),
              "Creates an empty multipolygon.")
@@ -280,6 +282,9 @@ void bind_multipolygon_with_holes2(py::module_& m) {
                      << mp.number_of_polygons_with_holes() << " polygons)";
                  return oss.str();
              });
+#else
+    (void)m;  // suppress unused parameter warning on old CGAL
+#endif
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
