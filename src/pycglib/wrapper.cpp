@@ -82,6 +82,11 @@
 #include <pybind11/stl.h>
 #include "core/polygon2.h"
 
+// ============================================================
+// ADD TO INCLUDES at top of cgal_wrapper.cpp:
+# include "core/triangulation2.h"
+// ============================================================
+
 // Declared from original/distance.cpp
 // double run_distance(double x1, double y1, double x2, double y2);
 double squared_distance(double x1, double y1, double x2, double y2);
@@ -2094,5 +2099,209 @@ bind_polygon2(m);
 bind_polygon_with_holes2(m);
 bind_multipolygon_with_holes2(m);
 bind_polygon_global_functions(m);
+
+
+
+// ─── Locate_type constants ────────────────────────────────────────────────────
+// Paste inside PYBIND11_MODULE body, before class definitions:
+m.attr("T2_VERTEX")               = static_cast<int>(CGALTriangulation2::VERTEX);
+m.attr("T2_EDGE")                 = static_cast<int>(CGALTriangulation2::EDGE);
+m.attr("T2_FACE")                 = static_cast<int>(CGALTriangulation2::FACE);
+m.attr("T2_OUTSIDE_CONVEX_HULL")  = static_cast<int>(CGALTriangulation2::OUTSIDE_CONVEX_HULL);
+m.attr("T2_OUTSIDE_AFFINE_HULL")  = static_cast<int>(CGALTriangulation2::OUTSIDE_AFFINE_HULL);
+ 
+// ─── VertexHandle2 ────────────────────────────────────────────────────────────
+py::class_<VertexHandle2>(m, "VertexHandle2")
+    .def(py::init<>())
+    .def("is_valid",  &VertexHandle2::is_valid)
+    .def("point",     &vh2_point)
+    .def("__eq__",    &vh2_eq)
+    .def("__ne__",    &vh2_neq)
+    .def("__hash__", [](const VertexHandle2& v) {
+        return std::hash<void*>()(static_cast<void*>(&(*v.vh)));
+    })
+    .def("__repr__", [](const VertexHandle2& v) {
+        if (!v.is_valid()) return std::string("VertexHandle2(invalid)");
+        auto p = vh2_point(v);
+        return "VertexHandle2(Point2(" + std::to_string(p.x()) + ", "
+                                       + std::to_string(p.y()) + "))";
+    });
+ 
+// ─── FaceHandle2 ─────────────────────────────────────────────────────────────
+py::class_<FaceHandle2>(m, "FaceHandle2")
+    .def(py::init<>())
+    .def("is_valid",    &FaceHandle2::is_valid)
+    .def("vertex",      &fh2_vertex,      py::arg("i"))
+    .def("neighbor",    &fh2_neighbor,    py::arg("i"))
+    .def("index",       py::overload_cast<const FaceHandle2&, const VertexHandle2&>(&fh2_index_vertex),
+                        py::arg("v"))
+    .def("index_face",  py::overload_cast<const FaceHandle2&, const FaceHandle2&>(&fh2_index_face),
+                        py::arg("n"))
+    .def("__eq__",      &fh2_eq)
+    .def("__ne__",      &fh2_neq)
+    .def("__hash__", [](const FaceHandle2& f) {
+        return std::hash<void*>()(static_cast<void*>(&(*f.fh)));
+    })
+    .def("__repr__", [](const FaceHandle2& f) {
+        return f.is_valid() ? "FaceHandle2(<valid>)" : "FaceHandle2(invalid)";
+    });
+ 
+// ─── EdgeHandle2 ─────────────────────────────────────────────────────────────
+py::class_<EdgeHandle2>(m, "EdgeHandle2")
+    .def(py::init<>())
+    .def(py::init<FaceHandle2, int>(), py::arg("face"), py::arg("index"))
+    .def_readwrite("face",  &EdgeHandle2::face)
+    .def_readwrite("index", &EdgeHandle2::index)
+    .def("__repr__", [](const EdgeHandle2& e) {
+        return "EdgeHandle2(index=" + std::to_string(e.index) + ")";
+    });
+ 
+// ─── Triangulation2 ───────────────────────────────────────────────────────────
+py::class_<Triangulation2>(m, "Triangulation2")
+    .def(py::init<>())
+ 
+    // ── Access ────────────────────────────────────────────────────────────────
+    .def("dimension",           &t2_dimension)
+    .def("number_of_vertices",  &t2_number_of_vertices)
+    .def("number_of_faces",     &t2_number_of_faces)
+    .def("is_valid",            &t2_is_valid, py::arg("verbose")=false)
+    .def("clear",               &t2_clear)
+    .def("swap",                &t2_swap, py::arg("other"))
+    .def("infinite_vertex",     &t2_infinite_vertex)
+    .def("infinite_face",       &t2_infinite_face)
+    .def("finite_vertex",       &t2_finite_vertex)
+ 
+    // ── Insert ────────────────────────────────────────────────────────────────
+    .def("insert", py::overload_cast<Triangulation2&, const Point2&>(&t2_insert_point),
+         py::arg("p"),
+         "Insert a single point. Returns VertexHandle2.")
+    .def("insert", py::overload_cast<Triangulation2&, const Point2&, const FaceHandle2&>(&t2_insert_point_hint),
+         py::arg("p"), py::arg("hint"),
+         "Insert with a face hint for faster location.")
+    .def("insert", py::overload_cast<Triangulation2&, const std::vector<Point2>&>(&t2_insert_points),
+         py::arg("points"),
+         "Insert a list of points. Returns number of inserted points.")
+    .def("push_back",                   &t2_push_back,                   py::arg("p"))
+    .def("insert_first",                &t2_insert_first,                py::arg("p"))
+    .def("insert_second",               &t2_insert_second,               py::arg("p"))
+    .def("insert_in_face",              &t2_insert_in_face,              py::arg("p"), py::arg("f"))
+    .def("insert_in_edge",              &t2_insert_in_edge,              py::arg("p"), py::arg("f"), py::arg("i"))
+    .def("insert_outside_convex_hull",  &t2_insert_outside_convex_hull,  py::arg("p"), py::arg("f"))
+    .def("insert_outside_affine_hull",  &t2_insert_outside_affine_hull,  py::arg("p"))
+ 
+    // ── Remove ────────────────────────────────────────────────────────────────
+    .def("remove",          &t2_remove,          py::arg("v"))
+    .def("remove_degree_3", &t2_remove_degree_3, py::arg("v"))
+    .def("remove_first",    &t2_remove_first,    py::arg("v"))
+    .def("remove_second",   &t2_remove_second,   py::arg("v"))
+ 
+    // ── Move ──────────────────────────────────────────────────────────────────
+    .def("move",                 &t2_move,                 py::arg("v"), py::arg("p"))
+    .def("move_if_no_collision", &t2_move_if_no_collision, py::arg("v"), py::arg("p"))
+ 
+    // ── Flip ──────────────────────────────────────────────────────────────────
+    .def("flip", &t2_flip, py::arg("f"), py::arg("i"))
+ 
+    // ── Locate ────────────────────────────────────────────────────────────────
+    .def("locate", py::overload_cast<const Triangulation2&, const Point2&>(&t2_locate),
+         py::arg("query"),
+         "Locate query point. Returns FaceHandle2.")
+    .def("locate", py::overload_cast<const Triangulation2&, const Point2&, const FaceHandle2&>(&t2_locate_hint),
+         py::arg("query"), py::arg("hint"))
+    .def("locate_full",    &t2_locate_full,    py::arg("query"),
+         "Returns (FaceHandle2, locate_type: int, li: int).")
+    .def("inexact_locate", &t2_inexact_locate, py::arg("query"))
+ 
+    // ── Predicates ────────────────────────────────────────────────────────────
+    .def("is_infinite",
+         py::overload_cast<const Triangulation2&, const VertexHandle2&>(&t2_is_infinite_vertex),
+         py::arg("v"))
+    .def("is_infinite",
+         py::overload_cast<const Triangulation2&, const FaceHandle2&>(&t2_is_infinite_face),
+         py::arg("f"))
+    .def("is_infinite",
+         py::overload_cast<const Triangulation2&, const FaceHandle2&, int>(&t2_is_infinite_edge),
+         py::arg("f"), py::arg("i"))
+    .def("is_edge",
+         py::overload_cast<const Triangulation2&, const VertexHandle2&, const VertexHandle2&>(&t2_is_edge),
+         py::arg("va"), py::arg("vb"))
+    .def("is_edge_full",  &t2_is_edge_full,  py::arg("va"), py::arg("vb"),
+         "Returns (bool, FaceHandle2, index: int).")
+    .def("is_face",       &t2_is_face3,      py::arg("v1"), py::arg("v2"), py::arg("v3"))
+    .def("is_face_full",  &t2_is_face3_full, py::arg("v1"), py::arg("v2"), py::arg("v3"),
+         "Returns (bool, FaceHandle2).")
+    .def("includes_edge", &t2_includes_edge, py::arg("va"), py::arg("vb"),
+         "Returns (bool, VertexHandle2 vbb, FaceHandle2, index: int).")
+ 
+    // ── Oriented / circle side ────────────────────────────────────────────────
+    .def("oriented_side",          &t2_oriented_side,          py::arg("f"), py::arg("p"))
+    .def("side_of_oriented_circle",&t2_side_of_oriented_circle,py::arg("f"), py::arg("p"))
+ 
+    // ── Geometry ──────────────────────────────────────────────────────────────
+    .def("triangle",             &t2_triangle,        py::arg("f"))
+    .def("segment",
+         py::overload_cast<const Triangulation2&, const FaceHandle2&, int>(&t2_segment_face_i),
+         py::arg("f"), py::arg("i"))
+    .def("segment",
+         py::overload_cast<const Triangulation2&, const EdgeHandle2&>(&t2_segment_edge),
+         py::arg("e"))
+    .def("circumcenter", &t2_circumcenter,  py::arg("f"))
+    .def("point",
+         py::overload_cast<const Triangulation2&, const FaceHandle2&, int>(&t2_point_face_i),
+         py::arg("f"), py::arg("i"))
+    .def("point",
+         py::overload_cast<const Triangulation2&, const VertexHandle2&>(&t2_point_vertex),
+         py::arg("v"))
+    .def("ccw", &t2_ccw, py::arg("i"))
+    .def("cw",  &t2_cw,  py::arg("i"))
+ 
+    // ── Adjacency ─────────────────────────────────────────────────────────────
+    .def("mirror_vertex", &t2_mirror_vertex, py::arg("f"), py::arg("i"))
+    .def("mirror_index",  &t2_mirror_index,  py::arg("f"), py::arg("i"))
+    .def("mirror_edge",   &t2_mirror_edge,   py::arg("e"))
+ 
+    // ── Finite iterators → list ───────────────────────────────────────────────
+    .def("finite_vertices", &t2_finite_vertices,
+         "Returns list of VertexHandle2 for all finite vertices.")
+    .def("finite_faces",    &t2_finite_faces,
+         "Returns list of FaceHandle2 for all finite faces.")
+    .def("finite_edges",    &t2_finite_edges,
+         "Returns list of EdgeHandle2 for all finite edges.")
+    .def("points",          &t2_points,
+         "Returns list of Point2 for all finite vertices.")
+ 
+    // ── All iterators → list ──────────────────────────────────────────────────
+    .def("all_vertices",    &t2_all_vertices,
+         "Returns list of VertexHandle2 including the infinite vertex.")
+    .def("all_faces",       &t2_all_faces,
+         "Returns list of FaceHandle2 including infinite faces.")
+    .def("all_edges",       &t2_all_edges,
+         "Returns list of EdgeHandle2 including infinite edges.")
+ 
+    // ── Circulators → list ────────────────────────────────────────────────────
+    .def("incident_faces",    &t2_incident_faces,    py::arg("v"),
+         "Returns list of FaceHandle2 incident to vertex v.")
+    .def("incident_edges",    &t2_incident_edges,    py::arg("v"),
+         "Returns list of EdgeHandle2 incident to vertex v.")
+    .def("incident_vertices", &t2_incident_vertices, py::arg("v"),
+         "Returns list of VertexHandle2 adjacent to vertex v.")
+ 
+    // ── Line walk ─────────────────────────────────────────────────────────────
+    .def("line_walk", &t2_line_walk, py::arg("p"), py::arg("q"),
+         "Returns list of FaceHandle2 intersected by line pq.")
+ 
+    // ── Convex hull ───────────────────────────────────────────────────────────
+    .def("convex_hull_vertices", &t2_convex_hull_vertices,
+         "Returns list of VertexHandle2 on the convex hull (CCW order).")
+    .def("convex_hull_edges",    &t2_convex_hull_edges,
+         "Returns list of EdgeHandle2 on the convex hull.")
+ 
+    // ── Advanced ──────────────────────────────────────────────────────────────
+    .def("set_infinite_vertex", &t2_set_infinite_vertex, py::arg("v"))
+ 
+    .def("__repr__", [](const Triangulation2& t) {
+        return "Triangulation2(vertices=" + std::to_string(t2_number_of_vertices(t))
+             + ", faces=" + std::to_string(t2_number_of_faces(t)) + ")";
+    });
 
 }
