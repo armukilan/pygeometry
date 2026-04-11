@@ -83,6 +83,7 @@
 #include "core/polygon2.h"
 #include "core/triangulation2.h"
 #include "core/delaunay2.h"
+#include "core/regular_triangulation2.h"
 
 // ============================================================
 // ADD TO INCLUDES at top of cgal_wrapper.cpp:
@@ -564,6 +565,10 @@ py::class_<WeightedPoint2>(m, "WeightedPoint2")
     .def(py::init<const Point2&>(),         py::arg("p"))
     .def(py::init<const Point2&, double>(), py::arg("p"), py::arg("w"))
     .def(py::init<double, double>(),        py::arg("x"), py::arg("y"))
+
+    // ✅ ADD THIS LINE
+    // .def_readwrite("wp", &WeightedPoint2::wp)
+    
     .def("point",       &wp2_point)
     .def("weight",      &wp2_weight)
     .def("hx",          &wp2_hx)
@@ -2456,6 +2461,230 @@ py::class_<DelaunayTriangulation2>(m, "DelaunayTriangulation2")
         return "DelaunayTriangulation2(vertices=" +
                std::to_string(dt2_number_of_vertices(dt)) +
                ", faces=" + std::to_string(dt2_number_of_faces(dt)) + ")";
+    });
+
+
+    // ============================================================
+// ADD TO INCLUDES at top of cgal_wrapper.cpp:
+//   #include "core/regular_triangulation2.h"
+//
+// Paste the block below inside PYBIND11_MODULE, AFTER the
+// Triangulation2 / Delaunay2 / handle blocks.
+// ============================================================
+
+// ─── RVertexHandle2 ──────────────────────────────────────────────────────────
+py::class_<RVertexHandle2>(m, "RVertexHandle2")
+    .def(py::init<>())
+    .def("is_valid", &RVertexHandle2::is_valid)
+    .def("__eq__",   &RVertexHandle2::operator==)
+    .def("__ne__",   &RVertexHandle2::operator!=)
+    .def("__hash__", [](const RVertexHandle2& v) {
+        return std::hash<void*>()(static_cast<void*>(&(*v.vh)));
+    })
+    .def("__repr__", [](const RVertexHandle2& v) {
+        return v.is_valid() ? "RVertexHandle2(<valid>)" : "RVertexHandle2(invalid)";
+    });
+ 
+// ─── RFaceHandle2 ────────────────────────────────────────────────────────────
+py::class_<RFaceHandle2>(m, "RFaceHandle2")
+    .def(py::init<>())
+    .def("is_valid",   &RFaceHandle2::is_valid)
+    .def("vertex",     &RFaceHandle2::vertex,     py::arg("i"))
+    .def("neighbor",   &RFaceHandle2::neighbor,   py::arg("i"))
+    .def("index",      &RFaceHandle2::index,      py::arg("v"))
+    .def("index_face", &RFaceHandle2::index_face, py::arg("n"))
+    .def("__eq__",     &RFaceHandle2::operator==)
+    .def("__ne__",     &RFaceHandle2::operator!=)
+    .def("__hash__", [](const RFaceHandle2& f) {
+        return std::hash<void*>()(static_cast<void*>(&(*f.fh)));
+    })
+    .def("__repr__", [](const RFaceHandle2& f) {
+        return f.is_valid() ? "RFaceHandle2(<valid>)" : "RFaceHandle2(invalid)";
+    });
+ 
+// ─── REdgeHandle2 ────────────────────────────────────────────────────────────
+py::class_<REdgeHandle2>(m, "REdgeHandle2")
+    .def(py::init<>())
+    .def(py::init<RFaceHandle2, int>(), py::arg("face"), py::arg("index"))
+    .def_readwrite("face",  &REdgeHandle2::face)
+    .def_readwrite("index", &REdgeHandle2::index)
+    .def("__repr__", [](const REdgeHandle2& e) {
+        return "REdgeHandle2(index=" + std::to_string(e.index) + ")";
+    });
+ 
+// ─── RegularTriangulation2 ───────────────────────────────────────────────────
+py::class_<RegularTriangulation2>(m, "RegularTriangulation2")
+    .def(py::init<>())
+ 
+    // ── Access ────────────────────────────────────────────────────────────
+    .def("dimension",                  &rt2_dimension)
+    .def("number_of_vertices",         &rt2_number_of_vertices,
+         "NON-HIDDEN vertices only.")
+    .def("number_of_hidden_vertices",  &rt2_number_of_hidden_vertices,
+         "HIDDEN vertices only (dominated by heavier-weight neighbours).")
+    .def("number_of_faces",            &rt2_number_of_faces)
+    .def("is_valid",                   &rt2_is_valid, py::arg("verbose") = false)
+    .def("clear",                      &rt2_clear)
+    .def("swap",                       &rt2_swap,     py::arg("other"))
+    .def("infinite_vertex",            &rt2_infinite_vertex)
+    .def("infinite_face",              &rt2_infinite_face)
+    .def("finite_vertex",              &rt2_finite_vertex)
+ 
+    // ── Insert ────────────────────────────────────────────────────────────
+    .def("insert",
+         py::overload_cast<RegularTriangulation2&, const WeightedPoint2&>
+         (&rt2_insert_weighted_point),
+         py::arg("wp"),
+         "Insert WeightedPoint2. Returns RVertexHandle2 (may be hidden).")
+    .def("insert",
+         py::overload_cast<RegularTriangulation2&, const WeightedPoint2&,
+                           const RFaceHandle2&>
+         (&rt2_insert_weighted_point_hint),
+         py::arg("wp"), py::arg("hint"))
+    .def("insert",
+         py::overload_cast<RegularTriangulation2&,
+                           const std::vector<WeightedPoint2>&>
+         (&rt2_insert_weighted_points),
+         py::arg("wpoints"),
+         "Bulk insert list[WeightedPoint2]. Returns net vertex count change.")
+ 
+    // ── Remove ────────────────────────────────────────────────────────────
+    .def("remove", &rt2_remove, py::arg("v"))
+ 
+    // ── Locate — takes bare Point2 (no weight) ────────────────────────────
+    .def("locate",
+         py::overload_cast<const RegularTriangulation2&, const Point2&>
+         (&rt2_locate), py::arg("query"))
+    .def("locate",
+         py::overload_cast<const RegularTriangulation2&, const Point2&,
+                           const RFaceHandle2&>
+         (&rt2_locate_hint), py::arg("query"), py::arg("hint"))
+    .def("locate_full",    &rt2_locate_full,    py::arg("query"),
+         "Returns (RFaceHandle2, locate_type: int, li: int).")
+    .def("inexact_locate", &rt2_inexact_locate, py::arg("query"))
+ 
+    // ── Nearest power vertex ──────────────────────────────────────────────
+    .def("nearest_power_vertex", &rt2_nearest_power_vertex, py::arg("p"),
+         "Nearest vertex by POWER distance. Takes bare Point2, not WeightedPoint2.")
+ 
+    // ── Conflict zone ─────────────────────────────────────────────────────
+    .def("get_conflicts",
+         &rt2_get_conflicts,
+         py::arg("wp"), py::arg("start"),
+         "Returns list[RFaceHandle2]. Requires start face from locate().")
+    .def("get_boundary_of_conflicts",
+         &rt2_get_boundary_of_conflicts,
+         py::arg("wp"), py::arg("start"),
+         "Returns list[REdgeHandle2] — CCW boundary.")
+    .def("get_hidden_vertices",
+         &rt2_get_hidden_vertices,
+         py::arg("wp"), py::arg("start"),
+         "Returns list[RVertexHandle2] — hidden vertices in conflict zone.")
+    .def("get_conflicts_and_boundary",
+         &rt2_get_conflicts_and_boundary,
+         py::arg("wp"), py::arg("start"),
+         "Returns (list[RFaceHandle2], list[REdgeHandle2]).")
+    .def("get_conflicts_and_hidden_vertices",
+         &rt2_get_conflicts_and_hidden_vertices,
+         py::arg("wp"), py::arg("start"),
+         "Returns (list[RFaceHandle2], list[RVertexHandle2]).")
+    .def("get_boundary_of_conflicts_and_hidden_vertices",
+         &rt2_get_boundary_of_conflicts_and_hidden_vertices,
+         py::arg("wp"), py::arg("start"),
+         "Returns (list[REdgeHandle2], list[RVertexHandle2]).")
+    .def("get_conflicts_and_boundary_and_hidden_vertices",
+         &rt2_get_conflicts_and_boundary_and_hidden_vertices,
+         py::arg("wp"), py::arg("start"),
+         "Returns (list[RFaceHandle2], list[REdgeHandle2], list[RVertexHandle2]).")
+ 
+    // ── Power diagram ─────────────────────────────────────────────────────
+    .def("dual_point",            &rt2_dual_point,            py::arg("f"),
+         "Weighted circumcenter of face f. Returns Point2.")
+    .def("weighted_circumcenter", &rt2_weighted_circumcenter, py::arg("f"),
+         "Same as dual_point.")
+    .def("dual_type",             &rt2_dual_type,             py::arg("e"),
+         "Returns 'segment', 'ray', or 'line'.")
+    .def("dual_segment",          &rt2_dual_segment,          py::arg("e"),
+         "Returns Segment2 if dual_type=='segment', else None.")
+    .def("dual_ray",              &rt2_dual_ray,              py::arg("e"),
+         "Returns Ray2 if dual_type=='ray', else None.")
+    .def("dual_line",             &rt2_dual_line,             py::arg("e"),
+         "Returns Line2 if dual_type=='line', else None.")
+ 
+    // ── Predicates ────────────────────────────────────────────────────────
+    .def("power_test", &rt2_power_test, py::arg("f"), py::arg("wp"),
+         "+1=inside power circle, -1=outside, 0=on.")
+    .def("is_infinite",
+         py::overload_cast<const RegularTriangulation2&, const RVertexHandle2&>
+         (&rt2_is_infinite_vertex), py::arg("v"))
+    .def("is_infinite",
+         py::overload_cast<const RegularTriangulation2&, const RFaceHandle2&>
+         (&rt2_is_infinite_face), py::arg("f"))
+    .def("is_infinite",
+         py::overload_cast<const RegularTriangulation2&, const RFaceHandle2&, int>
+         (&rt2_is_infinite_edge), py::arg("f"), py::arg("i"))
+    .def("is_edge",
+         py::overload_cast<const RegularTriangulation2&,
+                           const RVertexHandle2&, const RVertexHandle2&>
+         (&rt2_is_edge), py::arg("va"), py::arg("vb"))
+    .def("is_edge_full",  &rt2_is_edge_full,
+         py::arg("va"), py::arg("vb"),
+         "Returns (found: bool, RFaceHandle2, index: int).")
+    .def("is_face",       &rt2_is_face3,
+         py::arg("v1"), py::arg("v2"), py::arg("v3"))
+    .def("is_face_full",  &rt2_is_face3_full,
+         py::arg("v1"), py::arg("v2"), py::arg("v3"),
+         "Returns (found: bool, RFaceHandle2).")
+ 
+    // ── Geometry ──────────────────────────────────────────────────────────
+    .def("triangle",      &rt2_triangle,      py::arg("f"))
+    .def("segment",
+         py::overload_cast<const RegularTriangulation2&, const RFaceHandle2&, int>
+         (&rt2_segment_face_i), py::arg("f"), py::arg("i"))
+    .def("segment",
+         py::overload_cast<const RegularTriangulation2&, const REdgeHandle2&>
+         (&rt2_segment_edge), py::arg("e"))
+    .def("circumcenter",       &rt2_circumcenter,       py::arg("f"),
+         "Unweighted circumcenter. Use dual_point() for the weighted one.")
+    .def("weighted_point",     &rt2_weighted_point,     py::arg("v"),
+         "Returns WeightedPoint2 (position + weight) of vertex v.")
+    .def("bare_point",         &rt2_bare_point,         py::arg("v"),
+         "Returns bare Point2 (position only, no weight) of vertex v.")
+    .def("ccw", &rt2_ccw, py::arg("i"))
+    .def("cw",  &rt2_cw,  py::arg("i"))
+ 
+    // ── Adjacency ─────────────────────────────────────────────────────────
+    .def("mirror_vertex", &rt2_mirror_vertex, py::arg("f"), py::arg("i"))
+    .def("mirror_index",  &rt2_mirror_index,  py::arg("f"), py::arg("i"))
+    .def("mirror_edge",   &rt2_mirror_edge,   py::arg("e"))
+ 
+    // ── Iterators → list ──────────────────────────────────────────────────
+    .def("finite_vertices",  &rt2_finite_vertices,  "Non-hidden finite vertices.")
+    .def("finite_faces",     &rt2_finite_faces)
+    .def("finite_edges",     &rt2_finite_edges)
+    .def("points",           &rt2_points,           "Bare Point2 of non-hidden vertices.")
+    .def("all_vertices",     &rt2_all_vertices,     "Non-hidden + infinite vertex.")
+    .def("all_faces",        &rt2_all_faces)
+    .def("all_edges",        &rt2_all_edges)
+    .def("hidden_vertices",  &rt2_hidden_vertices,  "Hidden vertices only.")
+ 
+    // ── Circulators → list ────────────────────────────────────────────────
+    .def("incident_faces",    &rt2_incident_faces,    py::arg("v"))
+    .def("incident_edges",    &rt2_incident_edges,    py::arg("v"))
+    .def("incident_vertices", &rt2_incident_vertices, py::arg("v"))
+    .def("line_walk",         &rt2_line_walk,         py::arg("p"), py::arg("q"))
+ 
+    // ── Convex hull ───────────────────────────────────────────────────────
+    .def("convex_hull_vertices", &rt2_convex_hull_vertices)
+    .def("convex_hull_edges",    &rt2_convex_hull_edges)
+ 
+    .def("__repr__", [](const RegularTriangulation2& rt) {
+        return "RegularTriangulation2(vertices=" +
+               std::to_string(rt2_number_of_vertices(rt)) +
+               ", hidden=" +
+               std::to_string(rt2_number_of_hidden_vertices(rt)) +
+               ", faces=" +
+               std::to_string(rt2_number_of_faces(rt)) + ")";
     });
 
 }
