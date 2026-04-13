@@ -176,10 +176,14 @@ py::class_<Point2>(m, "Point2")
     .def(py::init<>())
     .def(py::init<double, double>(),  py::arg("x"), py::arg("y"))
     .def(py::init<int, int>(),        py::arg("x"), py::arg("y"))
+    .def(py::init([](){ return Point2(0.0, 0.0); }))
     // .def(py::init(&point2_from_weighted), py::arg("wp"))
     .def(py::init([](const WeightedPoint2& wp) {
     return point2_from_weighted(wp);
     }), py::arg("wp"))
+    .def(py::init([](double hx, double hy, double hw) {
+    return Point2(hx/hw, hy/hw);
+    }), py::arg("hx"), py::arg("hy"), py::arg("hw"))
     .def_property_readonly("x",  &Point2::x)
     .def_property_readonly("y",  &Point2::y)
     .def_property_readonly("hx", &Point2::hx)
@@ -204,6 +208,9 @@ py::class_<Point2>(m, "Point2")
     .def("transform", [](const Point2& p, const AffTransformation2& t) {
         return aff2_transform_point(t, p);
     }, py::arg("t"))
+    .def("__iter__", [](const Point2& p) {
+    return py::make_iterator(p.p.cartesian_begin(), p.p.cartesian_end());
+    }, py::keep_alive<0, 1>())
     .def("__repr__", [](const Point2& p) {
         return "Point2(" + std::to_string(p.x()) + ", " + std::to_string(p.y()) + ")";
     });
